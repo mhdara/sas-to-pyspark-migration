@@ -66,6 +66,16 @@ flowchart LR
 
 ---
 
+## Dashboard
+
+![Power BI dashboard: Migration overview page](powerbi/dashboard.png)
+
+The Power BI dashboard summarises the results on 9 pages (migration overview, bank data, code inventory,
+classification, data migration, code conversion, migration risks and lineage). Its data model and every page are
+shown in [powerbi/](powerbi/).
+
+---
+
 ## Repository guide
 
 | Path | Contents |
@@ -79,7 +89,7 @@ flowchart LR
 | [outputs/](outputs/) | every result as CSV: inventory, lineage, reconciliation, forecast parity, conversion attempts and checks |
 | [tests/](tests/) | 47 tests: data generator, analyzer, rules, data migration, forecast, validator |
 | [docs/lineage.md](docs/lineage.md) | data lineage, code lineage and back-tracing, as diagrams |
-| [powerbi/](powerbi/) | the dashboard's data model and measures |
+| [powerbi/](powerbi/) | the Power BI dashboard: data model, measures and screenshots of every page |
 
 Key code: [`migrate_data.py`](python/migrate_data.py) (data migration and reconciliation),
 [`validate.py`](python/validate.py) (the validator), [`convert.py`](python/convert.py) (LLM conversion loop),
@@ -111,7 +121,7 @@ report's [reproduction section](docs/TECHNICAL_REPORT.md#14-reproducing-the-resu
 
 - The SAS estate is synthetic and small (12 programs), written to contain known migration risks.
 - LLM results come from one run per method; their run-to-run stability was not measured.
-- The Power BI dashboard is built from `outputs/bi/`; its screenshot is added in [powerbi/](powerbi/).
+- The Power BI dashboard is built from `outputs/bi/`; its data model and all pages are shown in [powerbi/](powerbi/).
 - Limitations and what production would require: [report, sections 11–13](docs/TECHNICAL_REPORT.md#11-limitations-and-assumptions).
 
 ## License
