@@ -1,0 +1,6 @@
+# library_mappings.yaml - where each SAS library lives after migration (relative to the project root)
+ctrl: data/parquet/ctrl        # migrated source tables, read by converted code
+stg:  data/parquet/stg
+# out: set per method and run by convert.py -> data/parquet/py_out/<method>/run<k>
+#      (converted programs WRITE there, never over the SAS results)
+sas_expected: sas/outputs      # SAS results (.sas7bdat) used as the expected values in validation

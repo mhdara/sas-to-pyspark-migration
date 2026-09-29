@@ -1,0 +1,12 @@
+program_id,final_status,reason,attempts,method,run
+01_customer_clean,MANUAL_REVIEW,execution_error,1,lakebridge_sas_generic,1
+02_loan_enrichment,MANUAL_REVIEW,execution_error,1,lakebridge_sas_generic,1
+03_risk_format,MANUAL_REVIEW,execution_error,1,lakebridge_sas_generic,1
+04_payment_delinquency,MANUAL_REVIEW,execution_error,1,lakebridge_sas_generic,1
+05_card_fraud_summary,MANUAL_REVIEW,validation_difference,1,lakebridge_sas_generic,1
+06_macro_library,MANUAL_REVIEW,a program using it failed,1,lakebridge_sas_generic,1
+07_portfolio_report,MANUAL_REVIEW,execution_error,1,lakebridge_sas_generic,1
+08_period_driver,MANUAL_REVIEW,execution_error,1,lakebridge_sas_generic,1
+09_payment_model,MANUAL_REVIEW,execution_error,1,lakebridge_sas_generic,1
+10_repayment_forecast,MANUAL_REVIEW,execution_error,1,lakebridge_sas_generic,1
+11_executive_report,MANUAL_REVIEW,execution_error,1,lakebridge_sas_generic,1

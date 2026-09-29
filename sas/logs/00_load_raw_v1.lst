@@ -1,0 +1,18 @@
+
+                                                           The SAS System                 Monday, 28 September, 2026 12:40:00 AM   1
+
+                                                        max_name_      missing_
+                                                            bytes        income
+                                                     --------------------------
+                                                               12            15
+
+
+                                              00_load_raw v1: planted names as stored     Monday, 28 September, 2026 12:40:00 AM   2
+
+                                           customer_     customer_
+                                               id           name        city
+
+                                                8       Marie-Ève B    Saint-Jérôme  
+                                               43       Émilie Trem    Châteauguay    
+                                               44       François B     Rivière-du-Loup
+                                               45       Chloé Gagno    Gatineau        

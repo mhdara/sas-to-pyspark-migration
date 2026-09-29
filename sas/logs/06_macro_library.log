@@ -1,0 +1,35 @@
+159                                                        The SAS System                     Monday, 28 September, 2026 12:41:00 AM
+
+1281       
+1282       /*----------------------------------------------------------------------------------------------
+1283          06_macro_library.sas - shared macros used by other programs; creates no data by itself.
+1284       
+1285          What it does: defines two macros.
+1286            %summarize(ds=, class=, var=, out=)      count, total and average of &var per &class (PROC MEANS)
+1287            %flag_high(ds=, var=, threshold=, out=)  adds high_flag = 1 when &var > &threshold
+1288          Reads / writes: nothing on its own; programs 07 and 08 %include this file and call the macros.
+1289          Trap:   the code runs only through the programs that include it, so it can only be tested
+1290                  through them; a converted version becomes a Python module imported by those programs.
+1291       ----------------------------------------------------------------------------------------------*/
+1292       
+1293       %macro summarize(ds=, class=, var=, out=);
+1294         proc means data=&ds noprint nway;
+1295           class &class;
+1296           var &var;
+1297           output out=&out(drop=_type_ _freq_) n=n sum=total mean=avg;
+1298         run;
+1299       %mend summarize;
+1300       
+1301       %macro flag_high(ds=, var=, threshold=, out=);
+1302         data &out;
+1303           set &ds;
+1304           high_flag = (&var > &threshold);   /* missing values give 0 in SAS */
+1305         run;
+1306       %mend flag_high;
+1307       
+1308       
+1309       
+1310       
+160                                                        The SAS System                     Monday, 28 September, 2026 12:41:00 AM
+
+1311       

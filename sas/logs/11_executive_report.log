@@ -1,0 +1,47 @@
+169                                                        The SAS System                     Monday, 28 September, 2026 12:41:00 AM
+
+1520       
+1521       /*----------------------------------------------------------------------------------------------
+1522          11_executive_report.sas - one-page summary per segment, plus the repayment forecast.
+1523       
+1524          What it does: reads the late-payment threshold (DPD_THRESHOLD) from the settings table, as in
+1525            program 04; per segment, counts the loans and the loans whose worst delay is above the
+1526            threshold, and totals the principal; separately keeps only the future months of the forecast.
+1527          Reads:  out.loan_enriched (02), out.loan_status (04), out.fc and out.monthly_repay (10),
+1528                  ctrl.macro_parameters
+1529          Writes: out.exec_report (one row per segment), out.exec_forecast (12 future months)
+1530          Trap:   it depends on three earlier programs, so an error upstream shows up here; the threshold
+1531                  is read from the table (the guide hard-coded 30).
+1532       ----------------------------------------------------------------------------------------------*/
+1533       libname ctrl "&root/ctrl";
+1534       libname out  "&root/out";
+1535       
+1536       proc sql noprint;
+1537         select param_value into :dpd_threshold trimmed
+1538         from ctrl.macro_parameters
+1539         where param_name = 'DPD_THRESHOLD';
+1540       quit;
+1541       
+1542       proc sql;
+1543         create table out.exec_report as
+1544         select e.segment_name,
+1545                count(distinct e.loan_id)            as n_loans,
+1546                sum(s.max_dpd > &dpd_threshold)      as n_delinquent_loans,
+1547                sum(e.principal)                     as total_principal
+1548         from out.loan_enriched as e
+1549              left join out.loan_status as s on e.loan_id = s.loan_id
+1550         group by e.segment_name;
+1551       
+1552         create table out.exec_forecast as
+1553         select month, total_payment as forecast_payment
+1554         from out.fc
+1555         where _type_ = 'FORECAST'
+1556           and month > (select max(month) from out.monthly_repay);
+1557       quit;
+1558       
+1559       
+1560       
+1561       
+170                                                        The SAS System                     Monday, 28 September, 2026 12:41:00 AM
+
+1562       

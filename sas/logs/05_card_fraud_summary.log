@@ -1,0 +1,33 @@
+157                                                        The SAS System                     Monday, 28 September, 2026 12:41:00 AM
+
+1250       
+1251       /*----------------------------------------------------------------------------------------------
+1252          05_card_fraud_summary.sas - card spending per merchant type, and fraud counts.
+1253       
+1254          What it does: PROC MEANS computes, per merchant category, the number of transactions, the total
+1255            and the average amount (NWAY: category rows only, no grand total). PROC FREQ counts the
+1256            transactions per merchant category and fraud flag, with percentages.
+1257          Reads:  stg.card_transactions
+1258          Writes: out.card_summary (one row per category), out.fraud_freq (category x fraud flag)
+1259          Trap:   25 refunds (negative amounts) and 5 zero amounts are included: they lower the totals and
+1260                  the averages, and the converted code must count them the same way.
+1261       ----------------------------------------------------------------------------------------------*/
+1262       libname stg "&root/stg";
+1263       libname out "&root/out";
+1264       
+1265       proc means data=stg.card_transactions noprint nway;
+1266         class merchant_category;
+1267         var amount;
+1268         output out=out.card_summary(drop=_type_ _freq_) n=n_txn sum=total_amount mean=avg_amount;
+1269       run;
+1270       
+1271       proc freq data=stg.card_transactions noprint;
+1272         tables merchant_category*fraud_flag / out=out.fraud_freq;
+1273       run;
+1274       
+1275       
+1276       
+1277       
+158                                                        The SAS System                     Monday, 28 September, 2026 12:41:00 AM
+
+1278       

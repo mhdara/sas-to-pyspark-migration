@@ -1,0 +1,22 @@
+# classification_rules_v1.yaml - deterministic (non-LLM) classification. First matching rule wins.
+version: "1.1"   # 1.1 = tuned on programs 01, 04, 08 only (see docs/TECHNICAL_REPORT.md)
+technical:            # evaluated top to bottom against analyzer facts
+  - {if: "has_forecast == 1",                         label: Forecasting}
+  - {if: "has_reg == 1",                              label: Statistical Modeling}
+  - {if: "n_into >= 1 and n_do_loops >= 1",           label: Orchestration}
+  - {if: "n_macros_defined >= 1 and n_outputs == 0",  label: Utility}
+  - {if: "'MEANS' in procs or 'FREQ' in procs",       label: Aggregation}
+  - {if: "'report' in program_id",                    label: Reporting}
+  - {if: "n_joins >= 1 or has_retain == 1 or has_format == 1", label: Transformation}
+  - {if: "True",                                      label: Data Preparation}
+business:             # keyword hits in the code (comments removed); highest score wins
+  Lending: [loan, payment, principal, interest, delinq, mortgage, repay]
+  Payments: [card, transaction, merchant, fraud]
+  Customer Management: [customer, client, segment, province]
+  Risk: [risk, default, score, band, model, reg]
+  Reporting: [report, summary, executive]
+  Platform: [macro]          # fallback: macro-only programs
+complexity:
+  weights: {loc_per_20: 1, n_macros_defined: 2, max_macro_nesting: 3, n_into: 3, n_includes: 2,
+            n_joins: 1, retain_or_first_last: 6, has_format: 2, has_reg: 2, has_forecast: 4, n_dynamic_names: 2}
+  thresholds: {moderate: 5, complex: 10}    # < 5 Simple, 5-9 Moderate, >= 10 Complex

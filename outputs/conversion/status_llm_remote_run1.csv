@@ -1,0 +1,13 @@
+program_id,final_status,attempts,reason,method,run
+00_load_raw,REPLACED_BY_DATA_MIGRATION,0,,,
+01_customer_clean,VALIDATED,1,,llm_remote,1.0
+02_loan_enrichment,VALIDATED,1,,llm_remote,1.0
+03_risk_format,VALIDATED,1,,llm_remote,1.0
+04_payment_delinquency,VALIDATED,1,,llm_remote,1.0
+05_card_fraud_summary,VALIDATED,1,,llm_remote,1.0
+06_macro_library,VALIDATED,1,validated through the programs that include it,llm_remote,1.0
+07_portfolio_report,VALIDATED,2,,llm_remote,1.0
+09_payment_model,VALIDATED,1,,llm_remote,1.0
+10_repayment_forecast,VALIDATED,1,,llm_remote,1.0
+11_executive_report,VALIDATED,1,,llm_remote,1.0
+08_period_driver,VALIDATED,2,,llm_remote,1.0

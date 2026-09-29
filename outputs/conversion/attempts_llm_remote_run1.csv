@@ -1,0 +1,14 @@
+program_id,method,run,attempt,post_checks_ok,execution_ok,validation_ok,n_checks,n_failed_checks,error,model,latency_s,input_tokens,output_tokens,cost_usd,prompt_version,timestamp
+01_customer_clean,llm_remote,1,1,1,1,1,41,0,,claude-opus-5,6.29,1645,517,0.02115,v1,2026-09-28T04:01:26+00:00
+02_loan_enrichment,llm_remote,1,1,1,1,1,59,0,,claude-opus-5,8.49,1425,757,0.02605,v1,2026-09-28T04:01:39+00:00
+03_risk_format,llm_remote,1,1,1,1,1,45,0,,claude-opus-5,10.04,1427,835,0.02801,v1,2026-09-28T04:01:54+00:00
+04_payment_delinquency,llm_remote,1,1,1,1,1,48,0,,claude-opus-5,24.99,2788,2346,0.07259,v1,2026-09-28T04:02:29+00:00
+05_card_fraud_summary,llm_remote,1,1,1,1,1,37,0,,claude-opus-5,12.19,1419,1222,0.03764,v1,2026-09-28T04:02:47+00:00
+06_macro_library,llm_remote,1,1,1,1,1,0,0,,claude-opus-5,33.14,1510,2965,0.08167,v1,2026-09-28T04:03:23+00:00
+07_portfolio_report,llm_remote,1,1,1,0,0,0,0,"alue(                    ^^^^^^^^^^^^^^^^^   File ""<repo>/.venv/lib/python3.12/site-packages/pyspark/errors/exceptions/captured.py"", line 257, in deco     raise converted from None pyspark.errors.exceptions.captured.AnalysisException: [PATH_NOT_FOUND] Path does not exist: file:<repo>/data/parquet/py_out/llm_remote/run1/data/parquet/py_out/llm_remote/run1/loan_enriched. SQLSTATE: 42K03 ",claude-opus-5,38.01,1816,3476,0.09598,v1,2026-09-28T04:04:05+00:00
+07_portfolio_report,llm_remote,1,2,1,1,1,39,0,,claude-opus-5,19.74,4199,2093,0.07332,v1,2026-09-28T04:04:30+00:00
+09_payment_model,llm_remote,1,1,1,1,1,16,0,,claude-opus-5,12.08,1162,935,0.02918,v1,2026-09-28T04:06:07+00:00
+10_repayment_forecast,llm_remote,1,1,1,1,1,37,0,,claude-opus-5,23.54,2142,2312,0.06851,v1,2026-09-28T04:06:38+00:00
+11_executive_report,llm_remote,1,1,1,1,1,26,0,,claude-opus-5,16.63,1954,1658,0.05122,v1,2026-09-28T04:07:00+00:00
+08_period_driver,llm_remote,1,1,1,0,0,0,0,".12/site-packages/pyspark/sql/classic/dataframe.py"", line 967, in sort     _cols = self._preapare_cols_for_sort(F.col, cols, kwargs)             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^   File ""<repo>/.venv/lib/python3.12/site-packages/pyspark/sql/dataframe.py"", line 3255, in _preapare_cols_for_sort     raise PySparkValueError( pyspark.errors.exceptions.base.PySparkValueError: [CANNOT_BE_EMPTY] At least one cols must be specified. ",claude-opus-5,24.07,2313,2214,0.06692,v1,2026-09-28T04:07:49+00:00
+08_period_driver,llm_remote,1,2,1,1,1,65,0,,claude-opus-5,92.12,4253,8376,0.23067,v1,2026-09-28T04:09:28+00:00

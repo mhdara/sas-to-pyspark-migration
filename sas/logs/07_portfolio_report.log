@@ -1,0 +1,34 @@
+161                                                        The SAS System                     Monday, 28 September, 2026 12:41:00 AM
+
+1314       
+1315       /*----------------------------------------------------------------------------------------------
+1316          07_portfolio_report.sas - loan portfolio totals per customer segment, with a large-portfolio flag.
+1317       
+1318          What it does: includes the macro library (program 06); reads the HIGH_PRINCIPAL threshold
+1319            ("5000000", text) from the settings table; calls %summarize to total the loan principal per
+1320            segment, then %flag_high to flag segments whose total is above the threshold.
+1321          Reads:  out.loan_enriched (program 02), ctrl.macro_parameters, program 06 (%include)
+1322          Writes: out.portfolio_by_segment, out.portfolio_report (one row per segment)
+1323          Trap:   the logic lives in another file (%include) and inside macros, and the threshold comes
+1324                  from a table: a converter must follow all three to reproduce the result.
+1325       ----------------------------------------------------------------------------------------------*/
+1326       libname ctrl "&root/ctrl";
+1327       libname out  "&root/out";
+1328       
+1329       %include "&root/programs/06_macro_library.sas";
+1355       
+1356       proc sql noprint;
+1357         select param_value into :high_principal trimmed
+1358         from ctrl.macro_parameters
+1359         where param_name = 'HIGH_PRINCIPAL';
+1360       quit;
+1361       
+1362       %summarize(ds=out.loan_enriched, class=segment_name, var=principal, out=out.portfolio_by_segment);
+1363       %flag_high(ds=out.portfolio_by_segment, var=total, threshold=&high_principal, out=out.portfolio_report);
+1364       
+1365       
+1366       
+1367       
+162                                                        The SAS System                     Monday, 28 September, 2026 12:41:00 AM
+
+1368       

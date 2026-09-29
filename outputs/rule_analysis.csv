@@ -1,0 +1,13 @@
+program_id,business_category,technical_category,complexity,complexity_score,reason,rules_version
+00_load_raw,Platform,Data Preparation,Simple,3.3,technical rule: True; business rule: raw-file ingestion (INFILE),1.1
+01_customer_clean,Customer Management,Data Preparation,Simple,0.6,technical rule: True; business keyword score 6 (Customer Management),1.1
+02_loan_enrichment,Customer Management,Transformation,Simple,2.55,technical rule: n_joins >= 1 or has_retain == 1 or has_format == 1; business keyword score 10 (Customer Management),1.1
+03_risk_format,Risk,Transformation,Simple,2.65,technical rule: n_joins >= 1 or has_retain == 1 or has_format == 1; business keyword score 5 (Risk),1.1
+04_payment_delinquency,Lending,Transformation,Complex,10.35,technical rule: n_joins >= 1 or has_retain == 1 or has_format == 1; business keyword score 15 (Lending),1.1
+05_card_fraud_summary,Payments,Aggregation,Simple,0.5,technical rule: 'MEANS' in procs or 'FREQ' in procs; business keyword score 9 (Payments),1.1
+06_macro_library,Platform,Utility,Simple,4.65,technical rule: n_macros_defined >= 1 and n_outputs == 0; business rule: macro-only program,1.1
+07_portfolio_report,Lending,Reporting,Moderate,8.5,technical rule: 'report' in program_id; business keyword score 5 (Lending),1.1
+08_period_driver,Lending,Orchestration,Complex,21.4,technical rule: n_into >= 1 and n_do_loops >= 1; business keyword score 3 (Lending),1.1
+09_payment_model,Lending,Statistical Modeling,Simple,2.25,technical rule: has_reg == 1; business keyword score 4 (Lending),1.1
+10_repayment_forecast,Lending,Forecasting,Simple,4.8,technical rule: has_forecast == 1; business keyword score 8 (Lending),1.1
+11_executive_report,Lending,Reporting,Moderate,5.1,technical rule: 'report' in program_id; business keyword score 13 (Lending),1.1

@@ -1,0 +1,36 @@
+149                                                        The SAS System                     Monday, 28 September, 2026 12:41:00 AM
+
+1095       
+1096       /*----------------------------------------------------------------------------------------------
+1097          01_customer_clean.sas - clean the customer table and put each customer in an income band.
+1098       
+1099          What it does: copies stg.customers row by row; removes leading/trailing blanks from the name,
+1100            upper-cases the province ("qc" -> "QC"), flags a missing income, and assigns an income band:
+1101            LOW (< 20,000), MID (< 80,000) or HIGH.
+1102          Reads:  stg.customers
+1103          Writes: out.customers_clean (500 rows)
+1104          Trap:   in SAS a missing number is smaller than any number, so "annual_income < 20000" is TRUE
+1105                  for the 15 customers without income: they get LOW. A literal translation to Python or
+1106                  Spark (where a comparison with null is false/null) puts them in HIGH instead.
+1107       ----------------------------------------------------------------------------------------------*/
+1108       libname stg "&root/stg";
+1109       libname out "&root/out";
+1110       
+1111       data out.customers_clean;
+1112         set stg.customers;
+1113         length income_band $4;
+1114         customer_name = strip(customer_name);
+1115         province      = upcase(province);
+1116         income_missing = missing(annual_income);
+1117         /* TRAP: in SAS a missing income is smaller than any number -> falls into LOW */
+1118         if annual_income < 20000 then income_band = 'LOW';
+1119         else if annual_income < 80000 then income_band = 'MID';
+1120         else income_band = 'HIGH';
+1121       run;
+1122       
+1123       
+1124       
+1125       
+150                                                        The SAS System                     Monday, 28 September, 2026 12:41:00 AM
+
+1126       

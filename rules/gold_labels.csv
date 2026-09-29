@@ -1,0 +1,13 @@
+program_id,business_category,technical_category,complexity
+00_load_raw,Platform,Data Preparation,Simple
+01_customer_clean,Customer Management,Data Preparation,Simple
+02_loan_enrichment,Lending,Transformation,Moderate
+03_risk_format,Risk,Transformation,Moderate
+04_payment_delinquency,Lending,Transformation,Complex
+05_card_fraud_summary,Payments,Aggregation,Simple
+06_macro_library,Platform,Utility,Moderate
+07_portfolio_report,Reporting,Reporting,Moderate
+08_period_driver,Lending,Orchestration,Complex
+09_payment_model,Risk,Statistical Modeling,Moderate
+10_repayment_forecast,Lending,Forecasting,Complex
+11_executive_report,Reporting,Reporting,Moderate

@@ -1,0 +1,26 @@
+165                                                        The SAS System                     Monday, 28 September, 2026 12:41:00 AM
+
+1456       
+1457       /*----------------------------------------------------------------------------------------------
+1458          09_payment_model.sas - linear regression of the monthly payment.
+1459       
+1460          What it does: PROC REG fits monthly_payment = intercept + b1*principal + b2*interest_rate
+1461            + b3*term_months on the enriched loans and saves the coefficients.
+1462          Reads:  out.loan_enriched (program 02)
+1463          Writes: out.reg_est (one row: intercept, the three coefficients, root mean squared error)
+1464          Trap:   the converted code must fit the same model (ordinary least squares with an intercept) on
+1465                  the same 799 rows to give the same coefficients.
+1466       ----------------------------------------------------------------------------------------------*/
+1467       libname out "&root/out";
+1468       
+1469       proc reg data=out.loan_enriched outest=out.reg_est noprint;
+1470         model monthly_payment = principal interest_rate term_months;
+1471       run;
+1472       quit;
+1473       
+1474       
+1475       
+1476       
+166                                                        The SAS System                     Monday, 28 September, 2026 12:41:00 AM
+
+1477       

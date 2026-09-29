@@ -1,0 +1,3 @@
+[tool.ruff]
+line-length = 110
+extend-exclude = ["*.md", "converted"]  # docs are hand-written; converted/ is generated code kept as produced (evidence)

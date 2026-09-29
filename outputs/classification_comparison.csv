@@ -1,0 +1,145 @@
+program_id,field,gold,method,label,correct
+00_load_raw,business_category,Platform,rules_v1.1,Platform,1
+00_load_raw,technical_category,Data Preparation,rules_v1.1,Data Preparation,1
+00_load_raw,complexity,Simple,rules_v1.1,Simple,1
+01_customer_clean,business_category,Customer Management,rules_v1.1,Customer Management,1
+01_customer_clean,technical_category,Data Preparation,rules_v1.1,Data Preparation,1
+01_customer_clean,complexity,Simple,rules_v1.1,Simple,1
+02_loan_enrichment,business_category,Lending,rules_v1.1,Customer Management,0
+02_loan_enrichment,technical_category,Transformation,rules_v1.1,Transformation,1
+02_loan_enrichment,complexity,Moderate,rules_v1.1,Simple,0
+03_risk_format,business_category,Risk,rules_v1.1,Risk,1
+03_risk_format,technical_category,Transformation,rules_v1.1,Transformation,1
+03_risk_format,complexity,Moderate,rules_v1.1,Simple,0
+04_payment_delinquency,business_category,Lending,rules_v1.1,Lending,1
+04_payment_delinquency,technical_category,Transformation,rules_v1.1,Transformation,1
+04_payment_delinquency,complexity,Complex,rules_v1.1,Complex,1
+05_card_fraud_summary,business_category,Payments,rules_v1.1,Payments,1
+05_card_fraud_summary,technical_category,Aggregation,rules_v1.1,Aggregation,1
+05_card_fraud_summary,complexity,Simple,rules_v1.1,Simple,1
+06_macro_library,business_category,Platform,rules_v1.1,Platform,1
+06_macro_library,technical_category,Utility,rules_v1.1,Utility,1
+06_macro_library,complexity,Moderate,rules_v1.1,Simple,0
+07_portfolio_report,business_category,Reporting,rules_v1.1,Lending,0
+07_portfolio_report,technical_category,Reporting,rules_v1.1,Reporting,1
+07_portfolio_report,complexity,Moderate,rules_v1.1,Moderate,1
+08_period_driver,business_category,Lending,rules_v1.1,Lending,1
+08_period_driver,technical_category,Orchestration,rules_v1.1,Orchestration,1
+08_period_driver,complexity,Complex,rules_v1.1,Complex,1
+09_payment_model,business_category,Risk,rules_v1.1,Lending,0
+09_payment_model,technical_category,Statistical Modeling,rules_v1.1,Statistical Modeling,1
+09_payment_model,complexity,Moderate,rules_v1.1,Simple,0
+10_repayment_forecast,business_category,Lending,rules_v1.1,Lending,1
+10_repayment_forecast,technical_category,Forecasting,rules_v1.1,Forecasting,1
+10_repayment_forecast,complexity,Complex,rules_v1.1,Simple,0
+11_executive_report,business_category,Reporting,rules_v1.1,Lending,0
+11_executive_report,technical_category,Reporting,rules_v1.1,Reporting,1
+11_executive_report,complexity,Moderate,rules_v1.1,Moderate,1
+00_load_raw,business_category,Platform,rules_v2,Platform,1
+00_load_raw,technical_category,Data Preparation,rules_v2,Data Preparation,1
+00_load_raw,complexity,Simple,rules_v2,Simple,1
+01_customer_clean,business_category,Customer Management,rules_v2,Customer Management,1
+01_customer_clean,technical_category,Data Preparation,rules_v2,Data Preparation,1
+01_customer_clean,complexity,Simple,rules_v2,Simple,1
+02_loan_enrichment,business_category,Lending,rules_v2,Customer Management,0
+02_loan_enrichment,technical_category,Transformation,rules_v2,Transformation,1
+02_loan_enrichment,complexity,Moderate,rules_v2,Simple,0
+03_risk_format,business_category,Risk,rules_v2,Customer Management,0
+03_risk_format,technical_category,Transformation,rules_v2,Transformation,1
+03_risk_format,complexity,Moderate,rules_v2,Simple,0
+04_payment_delinquency,business_category,Lending,rules_v2,Lending,1
+04_payment_delinquency,technical_category,Transformation,rules_v2,Transformation,1
+04_payment_delinquency,complexity,Complex,rules_v2,Complex,1
+05_card_fraud_summary,business_category,Payments,rules_v2,Payments,1
+05_card_fraud_summary,technical_category,Aggregation,rules_v2,Aggregation,1
+05_card_fraud_summary,complexity,Simple,rules_v2,Simple,1
+06_macro_library,business_category,Platform,rules_v2,Platform,1
+06_macro_library,technical_category,Utility,rules_v2,Utility,1
+06_macro_library,complexity,Moderate,rules_v2,Simple,0
+07_portfolio_report,business_category,Reporting,rules_v2,Customer Management,0
+07_portfolio_report,technical_category,Reporting,rules_v2,Reporting,1
+07_portfolio_report,complexity,Moderate,rules_v2,Complex,0
+08_period_driver,business_category,Lending,rules_v2,Other,0
+08_period_driver,technical_category,Orchestration,rules_v2,Orchestration,1
+08_period_driver,complexity,Complex,rules_v2,Complex,1
+09_payment_model,business_category,Risk,rules_v2,Lending,0
+09_payment_model,technical_category,Statistical Modeling,rules_v2,Statistical Modeling,1
+09_payment_model,complexity,Moderate,rules_v2,Simple,0
+10_repayment_forecast,business_category,Lending,rules_v2,Lending,1
+10_repayment_forecast,technical_category,Forecasting,rules_v2,Forecasting,1
+10_repayment_forecast,complexity,Complex,rules_v2,Moderate,0
+11_executive_report,business_category,Reporting,rules_v2,Lending,0
+11_executive_report,technical_category,Reporting,rules_v2,Reporting,1
+11_executive_report,complexity,Moderate,rules_v2,Moderate,1
+00_load_raw,business_category,Platform,llm_claude_opus_5,Platform,1
+00_load_raw,technical_category,Data Preparation,llm_claude_opus_5,Data Preparation,1
+00_load_raw,complexity,Simple,llm_claude_opus_5,Simple,1
+01_customer_clean,business_category,Customer Management,llm_claude_opus_5,Customer Management,1
+01_customer_clean,technical_category,Data Preparation,llm_claude_opus_5,Data Preparation,1
+01_customer_clean,complexity,Simple,llm_claude_opus_5,Simple,1
+02_loan_enrichment,business_category,Lending,llm_claude_opus_5,Lending,1
+02_loan_enrichment,technical_category,Transformation,llm_claude_opus_5,Data Preparation,0
+02_loan_enrichment,complexity,Moderate,llm_claude_opus_5,Simple,0
+03_risk_format,business_category,Risk,llm_claude_opus_5,Risk,1
+03_risk_format,technical_category,Transformation,llm_claude_opus_5,Transformation,1
+03_risk_format,complexity,Moderate,llm_claude_opus_5,Simple,0
+04_payment_delinquency,business_category,Lending,llm_claude_opus_5,Lending,1
+04_payment_delinquency,technical_category,Transformation,llm_claude_opus_5,Transformation,1
+04_payment_delinquency,complexity,Complex,llm_claude_opus_5,Moderate,0
+05_card_fraud_summary,business_category,Payments,llm_claude_opus_5,Payments,1
+05_card_fraud_summary,technical_category,Aggregation,llm_claude_opus_5,Aggregation,1
+05_card_fraud_summary,complexity,Simple,llm_claude_opus_5,Simple,1
+06_macro_library,business_category,Platform,llm_claude_opus_5,Platform,1
+06_macro_library,technical_category,Utility,llm_claude_opus_5,Utility,1
+06_macro_library,complexity,Moderate,llm_claude_opus_5,Simple,0
+07_portfolio_report,business_category,Reporting,llm_claude_opus_5,Reporting,1
+07_portfolio_report,technical_category,Reporting,llm_claude_opus_5,Aggregation,0
+07_portfolio_report,complexity,Moderate,llm_claude_opus_5,Moderate,1
+08_period_driver,business_category,Lending,llm_claude_opus_5,Reporting,0
+08_period_driver,technical_category,Orchestration,llm_claude_opus_5,Orchestration,1
+08_period_driver,complexity,Complex,llm_claude_opus_5,Complex,1
+09_payment_model,business_category,Risk,llm_claude_opus_5,Lending,0
+09_payment_model,technical_category,Statistical Modeling,llm_claude_opus_5,Statistical Modeling,1
+09_payment_model,complexity,Moderate,llm_claude_opus_5,Simple,0
+10_repayment_forecast,business_category,Lending,llm_claude_opus_5,Payments,0
+10_repayment_forecast,technical_category,Forecasting,llm_claude_opus_5,Forecasting,1
+10_repayment_forecast,complexity,Complex,llm_claude_opus_5,Moderate,0
+11_executive_report,business_category,Reporting,llm_claude_opus_5,Reporting,1
+11_executive_report,technical_category,Reporting,llm_claude_opus_5,Aggregation,0
+11_executive_report,complexity,Moderate,llm_claude_opus_5,Simple,0
+00_load_raw,business_category,Platform,llm_qwen2.5_coder_14b,Customer Management,0
+00_load_raw,technical_category,Data Preparation,llm_qwen2.5_coder_14b,Data Preparation,1
+00_load_raw,complexity,Simple,llm_qwen2.5_coder_14b,Simple,1
+01_customer_clean,business_category,Customer Management,llm_qwen2.5_coder_14b,Customer Management,1
+01_customer_clean,technical_category,Data Preparation,llm_qwen2.5_coder_14b,Data Preparation,1
+01_customer_clean,complexity,Simple,llm_qwen2.5_coder_14b,Simple,1
+02_loan_enrichment,business_category,Lending,llm_qwen2.5_coder_14b,Lending,1
+02_loan_enrichment,technical_category,Transformation,llm_qwen2.5_coder_14b,Transformation,1
+02_loan_enrichment,complexity,Moderate,llm_qwen2.5_coder_14b,Simple,0
+03_risk_format,business_category,Risk,llm_qwen2.5_coder_14b,Risk,1
+03_risk_format,technical_category,Transformation,llm_qwen2.5_coder_14b,Transformation,1
+03_risk_format,complexity,Moderate,llm_qwen2.5_coder_14b,Simple,0
+04_payment_delinquency,business_category,Lending,llm_qwen2.5_coder_14b,Risk,0
+04_payment_delinquency,technical_category,Transformation,llm_qwen2.5_coder_14b,Transformation,1
+04_payment_delinquency,complexity,Complex,llm_qwen2.5_coder_14b,Moderate,0
+05_card_fraud_summary,business_category,Payments,llm_qwen2.5_coder_14b,Risk,0
+05_card_fraud_summary,technical_category,Aggregation,llm_qwen2.5_coder_14b,Aggregation,1
+05_card_fraud_summary,complexity,Simple,llm_qwen2.5_coder_14b,Simple,1
+06_macro_library,business_category,Platform,llm_qwen2.5_coder_14b,Reporting,0
+06_macro_library,technical_category,Utility,llm_qwen2.5_coder_14b,Utility,1
+06_macro_library,complexity,Moderate,llm_qwen2.5_coder_14b,Simple,0
+07_portfolio_report,business_category,Reporting,llm_qwen2.5_coder_14b,Reporting,1
+07_portfolio_report,technical_category,Reporting,llm_qwen2.5_coder_14b,Aggregation,0
+07_portfolio_report,complexity,Moderate,llm_qwen2.5_coder_14b,Simple,0
+08_period_driver,business_category,Lending,llm_qwen2.5_coder_14b,Reporting,0
+08_period_driver,technical_category,Orchestration,llm_qwen2.5_coder_14b,Aggregation,0
+08_period_driver,complexity,Complex,llm_qwen2.5_coder_14b,Moderate,0
+09_payment_model,business_category,Risk,llm_qwen2.5_coder_14b,Lending,0
+09_payment_model,technical_category,Statistical Modeling,llm_qwen2.5_coder_14b,Statistical Modeling,1
+09_payment_model,complexity,Moderate,llm_qwen2.5_coder_14b,Simple,0
+10_repayment_forecast,business_category,Lending,llm_qwen2.5_coder_14b,Lending,1
+10_repayment_forecast,technical_category,Forecasting,llm_qwen2.5_coder_14b,Forecasting,1
+10_repayment_forecast,complexity,Complex,llm_qwen2.5_coder_14b,Simple,0
+11_executive_report,business_category,Reporting,llm_qwen2.5_coder_14b,Reporting,1
+11_executive_report,technical_category,Reporting,llm_qwen2.5_coder_14b,Aggregation,0
+11_executive_report,complexity,Moderate,llm_qwen2.5_coder_14b,Simple,0

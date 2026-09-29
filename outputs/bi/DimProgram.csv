@@ -1,0 +1,13 @@
+program_id,program_name,path,size_bytes,loc,n_data_steps,n_procs,procs,n_macros_defined,n_macro_calls,max_macro_nesting,n_includes,n_into,n_do_loops,n_joins,has_retain,has_first_last,has_format,has_reg,has_forecast,n_dynamic_names,has_call_execute,has_symput,has_hash,has_array,has_passthrough,has_file_output,has_group_by,libraries,analyzer_version,n_inputs,n_outputs,n_upstream_programs,gold_business_category,gold_technical_category,gold_complexity
+00_load_raw,00_load_raw.sas,sas/programs/00_load_raw.sas,4181,66,7,1,SQL,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ctrl|stg,1.2,1,7,0,Platform,Data Preparation,Simple
+01_customer_clean,01_customer_clean.sas,sas/programs/01_customer_clean.sas,1349,12,1,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,out|stg,1.2,1,1,1,Customer Management,Data Preparation,Simple
+02_loan_enrichment,02_loan_enrichment.sas,sas/programs/02_loan_enrichment.sas,1214,11,0,1,SQL,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,ctrl|out|stg,1.2,3,1,2,Lending,Transformation,Moderate
+03_risk_format,03_risk_format.sas,sas/programs/03_risk_format.sas,1198,13,1,1,FORMAT,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,out,1.2,1,1,1,Risk,Transformation,Moderate
+04_payment_delinquency,04_payment_delinquency.sas,sas/programs/04_payment_delinquency.sas,2099,27,1,2,SORT|SQL,0,0,0,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,ctrl|out|stg,1.2,2,2,1,Lending,Transformation,Complex
+05_card_fraud_summary,05_card_fraud_summary.sas,sas/programs/05_card_fraud_summary.sas,1198,10,0,2,FREQ|MEANS,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,out|stg,1.2,1,2,1,Payments,Aggregation,Simple
+06_macro_library,06_macro_library.sas,sas/programs/06_macro_library.sas,1174,13,1,1,MEANS,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,1.2,0,0,0,Platform,Utility,Moderate
+07_portfolio_report,07_portfolio_report.sas,sas/programs/07_portfolio_report.sas,1369,10,0,1,SQL,0,2,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,ctrl|out,1.2,3,2,2,Reporting,Reporting,Moderate
+08_period_driver,08_period_driver.sas,sas/programs/08_period_driver.sas,2065,28,1,1,SQL,2,1,3,1,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,ctrl|out,1.2,2,5,2,Lending,Orchestration,Complex
+09_payment_model,09_payment_model.sas,sas/programs/09_payment_model.sas,883,5,0,1,REG,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,out,1.2,1,1,1,Risk,Statistical Modeling,Moderate
+10_repayment_forecast,10_repayment_forecast.sas,sas/programs/10_repayment_forecast.sas,1584,16,0,2,FORECAST|SQL,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,out|stg,1.2,2,3,1,Lending,Forecasting,Complex
+11_executive_report,11_executive_report.sas,sas/programs/11_executive_report.sas,1714,22,0,2,SQL,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,ctrl|out,1.2,5,2,4,Reporting,Reporting,Moderate

@@ -1,0 +1,2 @@
+# CSV files must keep LF line endings on every OS (Power BI on Windows reads them via git)
+*.csv -text

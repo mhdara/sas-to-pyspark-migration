@@ -1,0 +1,89 @@
+program_id,final_status,reason,attempts,method,run
+01_customer_clean,VALIDATED,,1,lakebridge_sas_custom,1
+02_loan_enrichment,VALIDATED,,1,lakebridge_sas_custom,1
+03_risk_format,VALIDATED,,1,lakebridge_sas_custom,1
+04_payment_delinquency,MANUAL_REVIEW,validation_difference,1,lakebridge_sas_custom,1
+05_card_fraud_summary,VALIDATED,,1,lakebridge_sas_custom,1
+06_macro_library,MANUAL_REVIEW,a program using it failed,1,lakebridge_sas_custom,1
+07_portfolio_report,MANUAL_REVIEW,validation_difference,1,lakebridge_sas_custom,1
+08_period_driver,MANUAL_REVIEW,execution_error,1,lakebridge_sas_custom,1
+09_payment_model,VALIDATED,,1,lakebridge_sas_custom,1
+10_repayment_forecast,MANUAL_REVIEW,execution_error,1,lakebridge_sas_custom,1
+11_executive_report,MANUAL_REVIEW,execution_error,1,lakebridge_sas_custom,1
+01_customer_clean,MANUAL_REVIEW,validation_difference,1,lakebridge_sas_generic_params,1
+02_loan_enrichment,MANUAL_REVIEW,execution_error,1,lakebridge_sas_generic_params,1
+03_risk_format,MANUAL_REVIEW,execution_error,1,lakebridge_sas_generic_params,1
+04_payment_delinquency,MANUAL_REVIEW,execution_error,1,lakebridge_sas_generic_params,1
+05_card_fraud_summary,MANUAL_REVIEW,validation_difference,1,lakebridge_sas_generic_params,1
+06_macro_library,MANUAL_REVIEW,a program using it failed,1,lakebridge_sas_generic_params,1
+07_portfolio_report,MANUAL_REVIEW,execution_error,1,lakebridge_sas_generic_params,1
+08_period_driver,MANUAL_REVIEW,execution_error,1,lakebridge_sas_generic_params,1
+09_payment_model,MANUAL_REVIEW,execution_error,1,lakebridge_sas_generic_params,1
+10_repayment_forecast,MANUAL_REVIEW,execution_error,1,lakebridge_sas_generic_params,1
+11_executive_report,MANUAL_REVIEW,execution_error,1,lakebridge_sas_generic_params,1
+01_customer_clean,MANUAL_REVIEW,execution_error,1,lakebridge_sas_generic,1
+02_loan_enrichment,MANUAL_REVIEW,execution_error,1,lakebridge_sas_generic,1
+03_risk_format,MANUAL_REVIEW,execution_error,1,lakebridge_sas_generic,1
+04_payment_delinquency,MANUAL_REVIEW,execution_error,1,lakebridge_sas_generic,1
+05_card_fraud_summary,MANUAL_REVIEW,validation_difference,1,lakebridge_sas_generic,1
+06_macro_library,MANUAL_REVIEW,a program using it failed,1,lakebridge_sas_generic,1
+07_portfolio_report,MANUAL_REVIEW,execution_error,1,lakebridge_sas_generic,1
+08_period_driver,MANUAL_REVIEW,execution_error,1,lakebridge_sas_generic,1
+09_payment_model,MANUAL_REVIEW,execution_error,1,lakebridge_sas_generic,1
+10_repayment_forecast,MANUAL_REVIEW,execution_error,1,lakebridge_sas_generic,1
+11_executive_report,MANUAL_REVIEW,execution_error,1,lakebridge_sas_generic,1
+01_customer_clean,MANUAL_REVIEW,execution_error,1,lakebridge_sas,1
+02_loan_enrichment,MANUAL_REVIEW,execution_error,1,lakebridge_sas,1
+03_risk_format,MANUAL_REVIEW,execution_error,1,lakebridge_sas,1
+04_payment_delinquency,MANUAL_REVIEW,execution_error,1,lakebridge_sas,1
+05_card_fraud_summary,MANUAL_REVIEW,execution_error,1,lakebridge_sas,1
+06_macro_library,MANUAL_REVIEW,a program using it failed,1,lakebridge_sas,1
+07_portfolio_report,MANUAL_REVIEW,execution_error,1,lakebridge_sas,1
+08_period_driver,MANUAL_REVIEW,execution_error,1,lakebridge_sas,1
+09_payment_model,MANUAL_REVIEW,execution_error,1,lakebridge_sas,1
+10_repayment_forecast,MANUAL_REVIEW,execution_error,1,lakebridge_sas,1
+11_executive_report,MANUAL_REVIEW,execution_error,1,lakebridge_sas,1
+01_customer_clean,MANUAL_REVIEW,execution_error,1,lakebridge_unknown_etl,1
+02_loan_enrichment,MANUAL_REVIEW,execution_error,1,lakebridge_unknown_etl,1
+03_risk_format,MANUAL_REVIEW,execution_error,1,lakebridge_unknown_etl,1
+04_payment_delinquency,MANUAL_REVIEW,execution_error,1,lakebridge_unknown_etl,1
+05_card_fraud_summary,MANUAL_REVIEW,execution_error,1,lakebridge_unknown_etl,1
+06_macro_library,MANUAL_REVIEW,execution_error,1,lakebridge_unknown_etl,1
+07_portfolio_report,MANUAL_REVIEW,execution_error,1,lakebridge_unknown_etl,1
+08_period_driver,MANUAL_REVIEW,execution_error,1,lakebridge_unknown_etl,1
+09_payment_model,MANUAL_REVIEW,execution_error,1,lakebridge_unknown_etl,1
+10_repayment_forecast,MANUAL_REVIEW,execution_error,1,lakebridge_unknown_etl,1
+11_executive_report,MANUAL_REVIEW,execution_error,1,lakebridge_unknown_etl,1
+01_customer_clean,VALIDATED,,1,llm_local,1
+02_loan_enrichment,VALIDATED,,1,llm_local,1
+03_risk_format,MANUAL_REVIEW,execution_error,2,llm_local,1
+04_payment_delinquency,VALIDATED,,2,llm_local,1
+05_card_fraud_summary,VALIDATED,,1,llm_local,1
+06_macro_library,MANUAL_REVIEW,a program using it failed,1,llm_local,1
+07_portfolio_report,MANUAL_REVIEW,execution_error,2,llm_local,1
+08_period_driver,MANUAL_REVIEW,execution_error,2,llm_local,1
+09_payment_model,MANUAL_REVIEW,execution_error,2,llm_local,1
+10_repayment_forecast,MANUAL_REVIEW,execution_error,2,llm_local,1
+11_executive_report,MANUAL_REVIEW,execution_error,2,llm_local,1
+01_customer_clean,VALIDATED,,1,llm_remote,1
+02_loan_enrichment,VALIDATED,,1,llm_remote,1
+03_risk_format,VALIDATED,,1,llm_remote,1
+04_payment_delinquency,VALIDATED,,1,llm_remote,1
+05_card_fraud_summary,VALIDATED,,1,llm_remote,1
+06_macro_library,VALIDATED,validated through the programs that include it,1,llm_remote,1
+07_portfolio_report,VALIDATED,,2,llm_remote,1
+09_payment_model,VALIDATED,,1,llm_remote,1
+10_repayment_forecast,VALIDATED,,1,llm_remote,1
+11_executive_report,VALIDATED,,1,llm_remote,1
+08_period_driver,VALIDATED,,2,llm_remote,1
+01_customer_clean,VALIDATED,,1,rule_based,1
+02_loan_enrichment,VALIDATED,,1,rule_based,1
+03_risk_format,VALIDATED,,1,rule_based,1
+04_payment_delinquency,NOT_SUPPORTED,"macro language (%macro, %let, %include, &var)",0,rule_based,1
+05_card_fraud_summary,VALIDATED,,1,rule_based,1
+06_macro_library,NOT_SUPPORTED,"macro language (%macro, %let, %include, &var)",0,rule_based,1
+07_portfolio_report,NOT_SUPPORTED,"macro language (%macro, %let, %include, &var)",0,rule_based,1
+08_period_driver,NOT_SUPPORTED,"macro language (%macro, %let, %include, &var)",0,rule_based,1
+09_payment_model,NOT_SUPPORTED,PROC REG,0,rule_based,1
+10_repayment_forecast,NOT_SUPPORTED,PROC FORECAST,0,rule_based,1
+11_executive_report,NOT_SUPPORTED,"macro language (%macro, %let, %include, &var)",0,rule_based,1

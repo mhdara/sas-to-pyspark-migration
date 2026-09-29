@@ -1,0 +1,33 @@
+151                                                        The SAS System                     Monday, 28 September, 2026 12:41:00 AM
+
+1129       
+1130       /*----------------------------------------------------------------------------------------------
+1131          02_loan_enrichment.sas - add customer and segment details to every loan.
+1132       
+1133          What it does: one PROC SQL query joins the loans to the cleaned customers (inner join), then to
+1134            the segment lookup table (left join), adding the customer name, province, income band,
+1135            segment name and risk level to each loan.
+1136          Reads:  stg.loans, out.customers_clean (program 01), ctrl.client_segments
+1137          Writes: out.loan_enriched (799 rows)
+1138          Trap:   one loan belongs to customer 999, who does not exist. The inner join drops it silently:
+1139                  800 loans in, 799 out. The converted code must drop exactly the same row.
+1140       ----------------------------------------------------------------------------------------------*/
+1141       libname stg  "&root/stg";
+1142       libname ctrl "&root/ctrl";
+1143       libname out  "&root/out";
+1144       
+1145       proc sql;
+1146         create table out.loan_enriched as
+1147         select l.*, c.customer_name, c.province, c.income_band,
+1148                s.segment_name, s.risk_band
+1149         from stg.loans as l
+1150              inner join out.customers_clean as c on l.customer_id = c.customer_id
+1151              left join ctrl.client_segments as s on c.segment_code = s.segment_code;
+1152       quit;
+1153       
+1154       
+1155       
+1156       
+152                                                        The SAS System                     Monday, 28 September, 2026 12:41:00 AM
+
+1157       

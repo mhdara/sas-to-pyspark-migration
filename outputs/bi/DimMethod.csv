@@ -1,0 +1,13 @@
+method_id,kind,description,deterministic
+rules_v1.1,classification,"Guide's rules, tuned on 3 programs (protocol)",1
+rules_v2,classification,"Broader rules, written after seeing v1.1 (optimistic)",1
+llm_claude_opus_5,classification,"Claude Opus 5, remote API",0
+llm_qwen2.5_coder_14b,classification,"qwen2.5-coder 14B, local (Ollama)",0
+rule_based,conversion,"Template translator for a SAS subset, no LLM",1
+llm_remote,conversion,Claude Opus 5 + targeted rules + one repair,0
+llm_local,conversion,qwen2.5-coder 14B + targeted rules + one repair,0
+lakebridge_sas_generic,conversion,"Databricks Lakebridge Switch, built-in SAS prompt (headline)",0
+lakebridge_sas_generic_params,conversion,Lakebridge Switch headline + root parameter (sensitivity),0
+lakebridge_sas,conversion,"Lakebridge Switch, SAS prompt, default SQL preprocessing (pitfall)",0
+lakebridge_unknown_etl,conversion,"Lakebridge Switch, unknown_etl route from the docs",0
+lakebridge_sas_custom,conversion,Lakebridge Switch with a custom prompt: built-in SAS prompt corrected + the project's rules,0

@@ -1,0 +1,196 @@
+column,check,expected_value,actual_value,passed,compared,expected_to_pass,as_expected,table_id,scenario
+,row_count,5,5,1,sas vs parquet,1,1,ctrl.client_segments,migration
+,column_count,5,5,1,sas vs parquet,1,1,ctrl.client_segments,migration
+,column_names,"['max_income', 'min_income', 'risk_band', 'segment_code', 'segment_name']","['max_income', 'min_income', 'risk_band', 'segment_code', 'segment_name']",1,sas vs parquet,1,1,ctrl.client_segments,migration
+segment_code,null_count,0,0,1,sas vs parquet,1,1,ctrl.client_segments,migration
+segment_code,max_length_chars,7,7,1,sas vs parquet,1,1,ctrl.client_segments,migration
+segment_code,max_length_utf8_bytes,7,7,1,sas vs parquet,1,1,ctrl.client_segments,migration
+segment_code,distinct_count,5,5,1,sas vs parquet,1,1,ctrl.client_segments,migration
+segment_code,exact_text_values,0,0,1,sas vs parquet,1,1,ctrl.client_segments,migration
+segment_name,null_count,0,0,1,sas vs parquet,1,1,ctrl.client_segments,migration
+segment_name,max_length_chars,21,21,1,sas vs parquet,1,1,ctrl.client_segments,migration
+segment_name,max_length_utf8_bytes,24,24,1,sas vs parquet,1,1,ctrl.client_segments,migration
+segment_name,distinct_count,5,5,1,sas vs parquet,1,1,ctrl.client_segments,migration
+segment_name,exact_text_values,0,0,1,sas vs parquet,1,1,ctrl.client_segments,migration
+risk_band,null_count,0,0,1,sas vs parquet,1,1,ctrl.client_segments,migration
+risk_band,max_length_chars,6,6,1,sas vs parquet,1,1,ctrl.client_segments,migration
+risk_band,max_length_utf8_bytes,6,6,1,sas vs parquet,1,1,ctrl.client_segments,migration
+risk_band,distinct_count,3,3,1,sas vs parquet,1,1,ctrl.client_segments,migration
+risk_band,exact_text_values,0,0,1,sas vs parquet,1,1,ctrl.client_segments,migration
+min_income,null_count,0,0,1,sas vs parquet,1,1,ctrl.client_segments,migration
+min_income,sum,210000.0,210000.0,1,sas vs parquet,1,1,ctrl.client_segments,migration
+min_income,min_max,"(np.float64(0.0), np.float64(150000.0))","(np.float64(0.0), np.float64(150000.0))",1,sas vs parquet,1,1,ctrl.client_segments,migration
+max_income,null_count,0,0,1,sas vs parquet,1,1,ctrl.client_segments,migration
+max_income,sum,20240000.0,20240000.0,1,sas vs parquet,1,1,ctrl.client_segments,migration
+max_income,min_max,"(np.float64(30000.0), np.float64(10000000.0))","(np.float64(30000.0), np.float64(10000000.0))",1,sas vs parquet,1,1,ctrl.client_segments,migration
+,row_hash_sha256,0 rows only in sas,0 rows only in parquet,1,sas vs parquet,1,1,ctrl.client_segments,migration
+segment_code,source_max_length_chars,7,7,1,source_csv vs sas,1,1,ctrl.client_segments,migration
+segment_code,source_exact_text_values,0,0,1,source_csv vs sas,1,1,ctrl.client_segments,migration
+segment_name,source_max_length_chars,21,21,1,source_csv vs sas,1,1,ctrl.client_segments,migration
+segment_name,source_exact_text_values,0,0,1,source_csv vs sas,1,1,ctrl.client_segments,migration
+risk_band,source_max_length_chars,6,6,1,source_csv vs sas,1,1,ctrl.client_segments,migration
+risk_band,source_exact_text_values,0,0,1,source_csv vs sas,1,1,ctrl.client_segments,migration
+,row_count,3,3,1,sas vs parquet,1,1,ctrl.macro_parameters,migration
+,column_count,2,2,1,sas vs parquet,1,1,ctrl.macro_parameters,migration
+,column_names,"['param_name', 'param_value']","['param_name', 'param_value']",1,sas vs parquet,1,1,ctrl.macro_parameters,migration
+param_name,null_count,0,0,1,sas vs parquet,1,1,ctrl.macro_parameters,migration
+param_name,max_length_chars,16,16,1,sas vs parquet,1,1,ctrl.macro_parameters,migration
+param_name,max_length_utf8_bytes,16,16,1,sas vs parquet,1,1,ctrl.macro_parameters,migration
+param_name,distinct_count,3,3,1,sas vs parquet,1,1,ctrl.macro_parameters,migration
+param_name,exact_text_values,0,0,1,sas vs parquet,1,1,ctrl.macro_parameters,migration
+param_value,null_count,0,0,1,sas vs parquet,1,1,ctrl.macro_parameters,migration
+param_value,max_length_chars,7,7,1,sas vs parquet,1,1,ctrl.macro_parameters,migration
+param_value,max_length_utf8_bytes,7,7,1,sas vs parquet,1,1,ctrl.macro_parameters,migration
+param_value,distinct_count,3,3,1,sas vs parquet,1,1,ctrl.macro_parameters,migration
+param_value,exact_text_values,0,0,1,sas vs parquet,1,1,ctrl.macro_parameters,migration
+,row_hash_sha256,0 rows only in sas,0 rows only in parquet,1,sas vs parquet,1,1,ctrl.macro_parameters,migration
+param_name,source_max_length_chars,16,16,1,source_csv vs sas,1,1,ctrl.macro_parameters,migration
+param_name,source_exact_text_values,0,0,1,source_csv vs sas,1,1,ctrl.macro_parameters,migration
+param_value,source_max_length_chars,7,7,1,source_csv vs sas,1,1,ctrl.macro_parameters,migration
+param_value,source_exact_text_values,0,0,1,source_csv vs sas,1,1,ctrl.macro_parameters,migration
+,row_count,12,12,1,sas vs parquet,1,1,ctrl.reporting_periods,migration
+,column_count,4,4,1,sas vs parquet,1,1,ctrl.reporting_periods,migration
+,column_names,"['active_flag', 'period_id', 'period_label', 'period_start']","['active_flag', 'period_id', 'period_label', 'period_start']",1,sas vs parquet,1,1,ctrl.reporting_periods,migration
+period_id,null_count,0,0,1,sas vs parquet,1,1,ctrl.reporting_periods,migration
+period_id,max_length_chars,6,6,1,sas vs parquet,1,1,ctrl.reporting_periods,migration
+period_id,max_length_utf8_bytes,6,6,1,sas vs parquet,1,1,ctrl.reporting_periods,migration
+period_id,distinct_count,12,12,1,sas vs parquet,1,1,ctrl.reporting_periods,migration
+period_id,exact_text_values,0,0,1,sas vs parquet,1,1,ctrl.reporting_periods,migration
+period_start,null_count,0,0,1,sas vs parquet,1,1,ctrl.reporting_periods,migration
+period_label,null_count,0,0,1,sas vs parquet,1,1,ctrl.reporting_periods,migration
+period_label,max_length_chars,7,7,1,sas vs parquet,1,1,ctrl.reporting_periods,migration
+period_label,max_length_utf8_bytes,7,7,1,sas vs parquet,1,1,ctrl.reporting_periods,migration
+period_label,distinct_count,12,12,1,sas vs parquet,1,1,ctrl.reporting_periods,migration
+period_label,exact_text_values,0,0,1,sas vs parquet,1,1,ctrl.reporting_periods,migration
+active_flag,null_count,0,0,1,sas vs parquet,1,1,ctrl.reporting_periods,migration
+active_flag,sum,4.0,4.0,1,sas vs parquet,1,1,ctrl.reporting_periods,migration
+active_flag,min_max,"(np.float64(0.0), np.float64(1.0))","(np.float64(0.0), np.float64(1.0))",1,sas vs parquet,1,1,ctrl.reporting_periods,migration
+,row_hash_sha256,0 rows only in sas,0 rows only in parquet,1,sas vs parquet,1,1,ctrl.reporting_periods,migration
+period_id,source_max_length_chars,6,6,1,source_csv vs sas,1,1,ctrl.reporting_periods,migration
+period_id,source_exact_text_values,0,0,1,source_csv vs sas,1,1,ctrl.reporting_periods,migration
+period_label,source_max_length_chars,7,7,1,source_csv vs sas,1,1,ctrl.reporting_periods,migration
+period_label,source_exact_text_values,0,0,1,source_csv vs sas,1,1,ctrl.reporting_periods,migration
+,row_count,5000,5000,1,sas vs parquet,1,1,stg.card_transactions,migration
+,column_count,6,6,1,sas vs parquet,1,1,stg.card_transactions,migration
+,column_names,"['amount', 'customer_id', 'fraud_flag', 'merchant_category', 'transaction_date', 'transaction_id']","['amount', 'customer_id', 'fraud_flag', 'merchant_category', 'transaction_date', 'transaction_id']",1,sas vs parquet,1,1,stg.card_transactions,migration
+transaction_id,null_count,0,0,1,sas vs parquet,1,1,stg.card_transactions,migration
+transaction_id,sum,12502500.0,12502500.0,1,sas vs parquet,1,1,stg.card_transactions,migration
+transaction_id,min_max,"(np.float64(1.0), np.float64(5000.0))","(np.float64(1.0), np.float64(5000.0))",1,sas vs parquet,1,1,stg.card_transactions,migration
+customer_id,null_count,0,0,1,sas vs parquet,1,1,stg.card_transactions,migration
+customer_id,sum,1255118.0,1255118.0,1,sas vs parquet,1,1,stg.card_transactions,migration
+customer_id,min_max,"(np.float64(1.0), np.float64(500.0))","(np.float64(1.0), np.float64(500.0))",1,sas vs parquet,1,1,stg.card_transactions,migration
+transaction_date,null_count,0,0,1,sas vs parquet,1,1,stg.card_transactions,migration
+merchant_category,null_count,0,0,1,sas vs parquet,1,1,stg.card_transactions,migration
+merchant_category,max_length_chars,11,11,1,sas vs parquet,1,1,stg.card_transactions,migration
+merchant_category,max_length_utf8_bytes,11,11,1,sas vs parquet,1,1,stg.card_transactions,migration
+merchant_category,distinct_count,6,6,1,sas vs parquet,1,1,stg.card_transactions,migration
+merchant_category,exact_text_values,0,0,1,sas vs parquet,1,1,stg.card_transactions,migration
+amount,null_count,0,0,1,sas vs parquet,1,1,stg.card_transactions,migration
+amount,sum,604767.25,604767.25,1,sas vs parquet,1,1,stg.card_transactions,migration
+amount,min_max,"(np.float64(-249.07), np.float64(705.85))","(np.float64(-249.07), np.float64(705.85))",1,sas vs parquet,1,1,stg.card_transactions,migration
+fraud_flag,null_count,0,0,1,sas vs parquet,1,1,stg.card_transactions,migration
+fraud_flag,sum,49.0,49.0,1,sas vs parquet,1,1,stg.card_transactions,migration
+fraud_flag,min_max,"(np.float64(0.0), np.float64(1.0))","(np.float64(0.0), np.float64(1.0))",1,sas vs parquet,1,1,stg.card_transactions,migration
+,row_hash_sha256,0 rows only in sas,0 rows only in parquet,1,sas vs parquet,1,1,stg.card_transactions,migration
+merchant_category,source_max_length_chars,11,11,1,source_csv vs sas,1,1,stg.card_transactions,migration
+merchant_category,source_exact_text_values,0,0,1,source_csv vs sas,1,1,stg.card_transactions,migration
+,row_count,500,500,1,sas vs parquet,1,1,stg.customers,migration
+,column_count,7,7,1,sas vs parquet,1,1,stg.customers,migration
+,column_names,"['annual_income', 'city', 'customer_id', 'customer_name', 'customer_since', 'province', 'segment_code']","['annual_income', 'city', 'customer_id', 'customer_name', 'customer_since', 'province', 'segment_code']",1,sas vs parquet,1,1,stg.customers,migration
+customer_id,null_count,0,0,1,sas vs parquet,1,1,stg.customers,migration
+customer_id,sum,125250.0,125250.0,1,sas vs parquet,1,1,stg.customers,migration
+customer_id,min_max,"(np.float64(1.0), np.float64(500.0))","(np.float64(1.0), np.float64(500.0))",1,sas vs parquet,1,1,stg.customers,migration
+customer_name,null_count,0,0,1,sas vs parquet,1,1,stg.customers,migration
+customer_name,max_length_chars,29,29,1,sas vs parquet,1,1,stg.customers,migration
+customer_name,max_length_utf8_bytes,30,30,1,sas vs parquet,1,1,stg.customers,migration
+customer_name,distinct_count,243,243,1,sas vs parquet,1,1,stg.customers,migration
+customer_name,exact_text_values,0,0,1,sas vs parquet,1,1,stg.customers,migration
+city,null_count,0,0,1,sas vs parquet,1,1,stg.customers,migration
+city,max_length_chars,15,15,1,sas vs parquet,1,1,stg.customers,migration
+city,max_length_utf8_bytes,16,16,1,sas vs parquet,1,1,stg.customers,migration
+city,distinct_count,10,10,1,sas vs parquet,1,1,stg.customers,migration
+city,exact_text_values,0,0,1,sas vs parquet,1,1,stg.customers,migration
+province,null_count,0,0,1,sas vs parquet,1,1,stg.customers,migration
+province,max_length_chars,2,2,1,sas vs parquet,1,1,stg.customers,migration
+province,max_length_utf8_bytes,2,2,1,sas vs parquet,1,1,stg.customers,migration
+province,distinct_count,1,1,1,sas vs parquet,1,1,stg.customers,migration
+province,exact_text_values,0,0,1,sas vs parquet,1,1,stg.customers,migration
+segment_code,null_count,0,0,1,sas vs parquet,1,1,stg.customers,migration
+segment_code,max_length_chars,7,7,1,sas vs parquet,1,1,stg.customers,migration
+segment_code,max_length_utf8_bytes,7,7,1,sas vs parquet,1,1,stg.customers,migration
+segment_code,distinct_count,5,5,1,sas vs parquet,1,1,stg.customers,migration
+segment_code,exact_text_values,0,0,1,sas vs parquet,1,1,stg.customers,migration
+annual_income,null_count,15,15,1,sas vs parquet,1,1,stg.customers,migration
+annual_income,sum,28920482.0,28920482.0,1,sas vs parquet,1,1,stg.customers,migration
+annual_income,min_max,"(np.float64(8741.0), np.float64(265515.0))","(np.float64(8741.0), np.float64(265515.0))",1,sas vs parquet,1,1,stg.customers,migration
+customer_since,null_count,0,0,1,sas vs parquet,1,1,stg.customers,migration
+,row_hash_sha256,0 rows only in sas,0 rows only in parquet,1,sas vs parquet,1,1,stg.customers,migration
+customer_name,source_max_length_chars,29,29,1,source_csv vs sas,1,1,stg.customers,migration
+customer_name,source_exact_text_values,0,0,1,source_csv vs sas,1,1,stg.customers,migration
+city,source_max_length_chars,15,15,1,source_csv vs sas,1,1,stg.customers,migration
+city,source_exact_text_values,0,0,1,source_csv vs sas,1,1,stg.customers,migration
+province,source_max_length_chars,2,2,1,source_csv vs sas,1,1,stg.customers,migration
+province,source_exact_text_values,0,0,1,source_csv vs sas,1,1,stg.customers,migration
+segment_code,source_max_length_chars,7,7,1,source_csv vs sas,1,1,stg.customers,migration
+segment_code,source_exact_text_values,0,0,1,source_csv vs sas,1,1,stg.customers,migration
+customer_name,negative_test_wrong_encoding,corruption detected,detected,1,correct_read vs latin1_read,1,1,stg.customers,migration
+,row_count,21412,21412,1,sas vs parquet,1,1,stg.loan_payments,migration
+,column_count,6,6,1,sas vs parquet,1,1,stg.loan_payments,migration
+,column_names,"['days_past_due', 'interest_paid', 'loan_id', 'payment_amount', 'payment_date', 'principal_paid']","['days_past_due', 'interest_paid', 'loan_id', 'payment_amount', 'payment_date', 'principal_paid']",1,sas vs parquet,1,1,stg.loan_payments,migration
+loan_id,null_count,0,0,1,sas vs parquet,1,1,stg.loan_payments,migration
+loan_id,sum,220405004.0,220405004.0,1,sas vs parquet,1,1,stg.loan_payments,migration
+loan_id,min_max,"(np.float64(10001.0), np.float64(10800.0))","(np.float64(10001.0), np.float64(10800.0))",1,sas vs parquet,1,1,stg.loan_payments,migration
+payment_date,null_count,0,0,1,sas vs parquet,1,1,stg.loan_payments,migration
+payment_amount,null_count,0,0,1,sas vs parquet,1,1,stg.loan_payments,migration
+payment_amount,sum,24574013.08,24574013.08,1,sas vs parquet,1,1,stg.loan_payments,migration
+payment_amount,min_max,"(np.float64(0.0), np.float64(6028.58))","(np.float64(0.0), np.float64(6028.58))",1,sas vs parquet,1,1,stg.loan_payments,migration
+principal_paid,null_count,0,0,1,sas vs parquet,1,1,stg.loan_payments,migration
+principal_paid,sum,9813588.77,9813588.77,1,sas vs parquet,1,1,stg.loan_payments,migration
+principal_paid,min_max,"(np.float64(0.0), np.float64(1777.58))","(np.float64(0.0), np.float64(1777.58))",1,sas vs parquet,1,1,stg.loan_payments,migration
+interest_paid,null_count,0,0,1,sas vs parquet,1,1,stg.loan_payments,migration
+interest_paid,sum,14760424.31,14760424.31,1,sas vs parquet,1,1,stg.loan_payments,migration
+interest_paid,min_max,"(np.float64(0.0), np.float64(5723.18))","(np.float64(0.0), np.float64(5723.18))",1,sas vs parquet,1,1,stg.loan_payments,migration
+days_past_due,null_count,0,0,1,sas vs parquet,1,1,stg.loan_payments,migration
+days_past_due,sum,129930.0,129930.0,1,sas vs parquet,1,1,stg.loan_payments,migration
+days_past_due,min_max,"(np.float64(0.0), np.float64(45.0))","(np.float64(0.0), np.float64(45.0))",1,sas vs parquet,1,1,stg.loan_payments,migration
+,row_hash_sha256,0 rows only in sas,0 rows only in parquet,1,sas vs parquet,1,1,stg.loan_payments,migration
+,row_count,800,800,1,sas vs parquet,1,1,stg.loans,migration
+,column_count,9,9,1,sas vs parquet,1,1,stg.loans,migration
+,column_names,"['customer_id', 'interest_rate', 'loan_id', 'loan_type', 'monthly_payment', 'origination_date', 'principal', 'status', 'term_months']","['customer_id', 'interest_rate', 'loan_id', 'loan_type', 'monthly_payment', 'origination_date', 'principal', 'status', 'term_months']",1,sas vs parquet,1,1,stg.loans,migration
+loan_id,null_count,0,0,1,sas vs parquet,1,1,stg.loans,migration
+loan_id,sum,8320400.0,8320400.0,1,sas vs parquet,1,1,stg.loans,migration
+loan_id,min_max,"(np.float64(10001.0), np.float64(10800.0))","(np.float64(10001.0), np.float64(10800.0))",1,sas vs parquet,1,1,stg.loans,migration
+customer_id,null_count,0,0,1,sas vs parquet,1,1,stg.loans,migration
+customer_id,sum,200535.0,200535.0,1,sas vs parquet,1,1,stg.loans,migration
+customer_id,min_max,"(np.float64(1.0), np.float64(999.0))","(np.float64(1.0), np.float64(999.0))",1,sas vs parquet,1,1,stg.loans,migration
+loan_type,null_count,0,0,1,sas vs parquet,1,1,stg.loans,migration
+loan_type,max_length_chars,11,11,1,sas vs parquet,1,1,stg.loans,migration
+loan_type,max_length_utf8_bytes,11,11,1,sas vs parquet,1,1,stg.loans,migration
+loan_type,distinct_count,4,4,1,sas vs parquet,1,1,stg.loans,migration
+loan_type,exact_text_values,0,0,1,sas vs parquet,1,1,stg.loans,migration
+origination_date,null_count,0,0,1,sas vs parquet,1,1,stg.loans,migration
+principal,null_count,0,0,1,sas vs parquet,1,1,stg.loans,migration
+principal,sum,102520652.0,102520652.0,1,sas vs parquet,1,1,stg.loans,migration
+principal,min_max,"(np.float64(2142.0), np.float64(595897.0))","(np.float64(2142.0), np.float64(595897.0))",1,sas vs parquet,1,1,stg.loans,migration
+interest_rate,null_count,0,0,1,sas vs parquet,1,1,stg.loans,migration
+interest_rate,sum,59.78999999999999,59.78999999999999,1,sas vs parquet,1,1,stg.loans,migration
+interest_rate,min_max,"(np.float64(0.0399), np.float64(0.1199))","(np.float64(0.0399), np.float64(0.1199))",1,sas vs parquet,1,1,stg.loans,migration
+term_months,null_count,0,0,1,sas vs parquet,1,1,stg.loans,migration
+term_months,sum,99324.0,99324.0,1,sas vs parquet,1,1,stg.loans,migration
+term_months,min_max,"(np.float64(36.0), np.float64(300.0))","(np.float64(36.0), np.float64(300.0))",1,sas vs parquet,1,1,stg.loans,migration
+status,null_count,0,0,1,sas vs parquet,1,1,stg.loans,migration
+status,max_length_chars,7,7,1,sas vs parquet,1,1,stg.loans,migration
+status,max_length_utf8_bytes,7,7,1,sas vs parquet,1,1,stg.loans,migration
+status,distinct_count,3,3,1,sas vs parquet,1,1,stg.loans,migration
+status,exact_text_values,0,0,1,sas vs parquet,1,1,stg.loans,migration
+monthly_payment,null_count,0,0,1,sas vs parquet,1,1,stg.loans,migration
+monthly_payment,sum,1004204.23,1004204.23,1,sas vs parquet,1,1,stg.loans,migration
+monthly_payment,min_max,"(np.float64(42.4), np.float64(6028.58))","(np.float64(42.4), np.float64(6028.58))",1,sas vs parquet,1,1,stg.loans,migration
+,row_hash_sha256,0 rows only in sas,0 rows only in parquet,1,sas vs parquet,1,1,stg.loans,migration
+loan_type,source_max_length_chars,11,11,1,source_csv vs sas,1,1,stg.loans,migration
+loan_type,source_exact_text_values,0,0,1,source_csv vs sas,1,1,stg.loans,migration
+status,source_max_length_chars,7,7,1,source_csv vs sas,1,1,stg.loans,migration
+status,source_exact_text_values,0,0,1,source_csv vs sas,1,1,stg.loans,migration
+customer_name,truncation_demo_max_length_chars,29,12,0,source_csv vs sas_v1,0,1,stg.customers,"(v1 load, $12)"
+customer_name,truncation_demo_exact_text_values,0,444,0,source_csv vs sas_v1,0,1,stg.customers,"(v1 load, $12)"
+customer_name,truncation_demo_invalid_utf8,0 names with a broken character,12 names cut inside a 2-byte character,0,source_csv vs sas_v1,0,1,stg.customers,"(v1 load, $12)"

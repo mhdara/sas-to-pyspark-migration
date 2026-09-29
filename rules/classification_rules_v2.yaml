@@ -1,0 +1,69 @@
+# classification_rules_v2.yaml - deterministic (non-LLM) classification, broader than v1.1.
+# Written AFTER seeing v1.1's results on the 12 programs, from general SAS knowledge, not to fix
+# individual programs: its score on those 12 programs is optimistic (see docs/TECHNICAL_REPORT.md).
+# Each rule is tested on small SAS snippets in tests/test_classify_rules_v2.py.
+version: "2.0"
+
+# SAS procedures grouped by purpose; rules test them with uses('<group>')
+proc_groups:
+  forecasting: [FORECAST, ARIMA, ESM, TIMESERIES, UCM, HPF, HPFENGINE, VARMAX, AUTOREG]
+  modeling: [REG, LOGISTIC, GLM, GENMOD, MIXED, GLMSELECT, HPLOGISTIC, HPREG, PHREG, NLIN, SCORE, PLM, HPSPLIT]
+  reporting: [REPORT, TABULATE, PRINT, EXPORT, SGPLOT, SGPANEL, GCHART, GPLOT]
+  aggregation: [MEANS, SUMMARY, FREQ, UNIVARIATE, RANK]
+  reshaping: [TRANSPOSE]
+  loading: [IMPORT]
+
+# Technical type: evaluated top to bottom, first match wins (most specific purpose first).
+# Available: analyzer facts (migration_inventory.csv), uses('<group>'), name_matches('<regex>').
+technical:
+  - {if: "uses('forecasting')", label: Forecasting}
+  - {if: "uses('modeling')", label: Statistical Modeling}
+  - {if: "has_call_execute or (n_do_loops >= 1 and (n_into >= 1 or has_symput))", label: Orchestration}
+  - {if: "n_macros_defined >= 1 and n_outputs == 0", label: Utility}
+  - {if: "uses('reporting') or has_file_output", label: Reporting}
+  - {if: "name_matches(r'report|rpt|dashboard')", label: Reporting, note: naming convention}
+  - {if: "uses('aggregation') or has_group_by", label: Aggregation}
+  - {if: "n_joins >= 1 or has_retain or has_first_last or has_format or has_hash or has_array or uses('reshaping')", label: Transformation}
+  - {if: "True", label: Data Preparation}
+
+# Business area: keyword evidence, weighted by WHERE it appears. What a program produces says most
+# about its purpose, so output table names weigh most. Code is split into words at every
+# non-letter (loan_payments -> loan, payments). Keywords of 5+ letters also match longer words
+# (delinq -> delinquency); shorter ones match the word or its plural only (pd, pds; card, cards).
+business:
+  weights: {output_tables: 3, input_tables: 1, code: 0.25}
+  min_score: 2        # weaker evidence -> Other
+  keywords:
+    Lending: [loan, mortgage, principal, interest, delinq, repay, payment, amortiz, dpd, arrears]
+    Payments: [card, transaction, txn, merchant, fraud, chargeback, atm]
+    Customer Management: [customer, client, kyc, province, address, contact, segment, onboard]
+    Risk: [risk, pd, lgd, ead, exposure, rating, score, provision, impairment, basel, ifrs9]
+    Reporting: [report, rpt, executive, dashboard, kpi]
+  # checked before the keywords
+  platform:
+    - {if: "n_macros_defined >= 1 and n_outputs == 0", reason: macro-only program}
+    - {if: "reads_raw_files", reason: raw-file ingestion (INFILE or PROC IMPORT)}
+
+# Complexity: points from analyzer facts. Line count is capped so a long simple program cannot
+# outrank a short tricky one. The reason lists the three biggest contributors.
+complexity:
+  loc_per_20: 1
+  loc_points_max: 3
+  weights:
+    n_macros_defined: 2
+    max_macro_nesting: 3
+    n_into: 3
+    n_includes: 2
+    n_joins: 1
+    retain_or_first_last: 6   # row-order logic (tuned in v1.1)
+    has_format: 2
+    modeling: 2
+    forecasting: 4
+    n_dynamic_names: 2
+    has_call_execute: 4       # code generated at run time
+    has_hash: 4
+    has_array: 2
+    has_passthrough: 3        # SQL in another database's dialect
+    reshaping: 2
+    n_upstream_programs: 1    # must be migrated after each program it depends on
+  thresholds: {moderate: 5, complex: 10}   # < 5 Simple, 5-9.99 Moderate, >= 10 Complex

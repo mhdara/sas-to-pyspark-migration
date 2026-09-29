@@ -1,0 +1,9 @@
+method,run,programs,validated,validated_first_attempt,validated_after_repair,manual_review,not_supported,checks_passed,planted_traps_passed,llm_calls,minutes,cost_usd
+lakebridge_sas,1,11,0,0,0,11,0,0/0,0/0,11,38.4,0.0
+lakebridge_sas_custom,1,11,5,5,0,6,0,264/273,6/6,11,7.0,0.0
+lakebridge_sas_generic,1,11,0,0,0,11,0,34/37,1/1,11,16.7,0.0
+lakebridge_sas_generic_params,1,11,0,0,0,11,0,61/67,3/3,11,8.9,0.0
+lakebridge_unknown_etl,1,11,0,0,0,11,0,0/0,0/0,11,16.6,0.0
+llm_local,1,11,4,3,1,7,0,185/185,5/5,18,322.7,0.0
+llm_remote,1,11,11,9,2,0,0,413/413,7/7,13,5.4,0.883
+rule_based,1,11,4,4,0,0,7,182/182,5/5,0,0.3,0.0

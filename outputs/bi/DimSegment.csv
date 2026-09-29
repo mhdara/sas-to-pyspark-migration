@@ -1,0 +1,6 @@
+segment_code,segment_name,risk_band,min_income,max_income
+RETAIL,Particulier Québec,MEDIUM,0.0,60000.0
+PREMIUM,Clientèle privilégiée,LOW,60000.0,150000.0
+PRIVATE,Gestion privée,LOW,150000.0,10000000.0
+SME,Petite entreprise,HIGH,0.0,10000000.0
+STUDENT,Étudiant,HIGH,0.0,30000.0

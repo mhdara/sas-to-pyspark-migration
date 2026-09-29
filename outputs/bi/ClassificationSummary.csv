@@ -1,0 +1,13 @@
+field,method,n,accuracy_pct,optimistic
+business_category,llm_claude_opus_5,12,75.0,0
+business_category,llm_qwen2.5_coder_14b,12,50.0,0
+business_category,rules_v1.1,12,66.7,0
+business_category,rules_v2,12,50.0,1
+complexity,llm_claude_opus_5,12,41.7,0
+complexity,llm_qwen2.5_coder_14b,12,25.0,0
+complexity,rules_v1.1,12,58.3,0
+complexity,rules_v2,12,50.0,1
+technical_category,llm_claude_opus_5,12,75.0,0
+technical_category,llm_qwen2.5_coder_14b,12,75.0,0
+technical_category,rules_v1.1,12,100.0,0
+technical_category,rules_v2,12,100.0,1

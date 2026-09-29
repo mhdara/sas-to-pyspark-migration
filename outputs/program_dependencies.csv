@@ -1,0 +1,90 @@
+program_id,object,object_type,relationship,confidence,evidence
+00_load_raw,card_transactions.csv,FILE,READS,HIGH,static (infile)
+00_load_raw,ctrl_client_segments.csv,FILE,READS,HIGH,static (infile)
+00_load_raw,ctrl_macro_parameters.csv,FILE,READS,HIGH,static (infile)
+00_load_raw,ctrl_reporting_periods.csv,FILE,READS,HIGH,static (infile)
+00_load_raw,customers.csv,FILE,READS,HIGH,static (infile)
+00_load_raw,loan_payments.csv,FILE,READS,HIGH,static (infile)
+00_load_raw,loans.csv,FILE,READS,HIGH,static (infile)
+00_load_raw,stg.customers,TABLE,READS,HIGH,static
+00_load_raw,ctrl,LIBRARY,USES_LIBRARY,HIGH,static
+00_load_raw,stg,LIBRARY,USES_LIBRARY,HIGH,static
+00_load_raw,ctrl.client_segments,TABLE,WRITES,HIGH,static
+00_load_raw,ctrl.macro_parameters,TABLE,WRITES,HIGH,static
+00_load_raw,ctrl.reporting_periods,TABLE,WRITES,HIGH,static
+00_load_raw,stg.card_transactions,TABLE,WRITES,HIGH,static
+00_load_raw,stg.customers,TABLE,WRITES,HIGH,static
+00_load_raw,stg.loan_payments,TABLE,WRITES,HIGH,static
+00_load_raw,stg.loans,TABLE,WRITES,HIGH,static
+01_customer_clean,stg.customers,TABLE,READS,HIGH,static
+01_customer_clean,out,LIBRARY,USES_LIBRARY,HIGH,static
+01_customer_clean,stg,LIBRARY,USES_LIBRARY,HIGH,static
+01_customer_clean,out.customers_clean,TABLE,WRITES,HIGH,static
+02_loan_enrichment,ctrl.client_segments,TABLE,READS,HIGH,static
+02_loan_enrichment,out.customers_clean,TABLE,READS,HIGH,static
+02_loan_enrichment,stg.loans,TABLE,READS,HIGH,static
+02_loan_enrichment,ctrl,LIBRARY,USES_LIBRARY,HIGH,static
+02_loan_enrichment,out,LIBRARY,USES_LIBRARY,HIGH,static
+02_loan_enrichment,stg,LIBRARY,USES_LIBRARY,HIGH,static
+02_loan_enrichment,out.loan_enriched,TABLE,WRITES,HIGH,static
+03_risk_format,out.customers_clean,TABLE,READS,HIGH,static
+03_risk_format,out,LIBRARY,USES_LIBRARY,HIGH,static
+03_risk_format,out.customer_risk,TABLE,WRITES,HIGH,static
+04_payment_delinquency,ctrl.macro_parameters,TABLE,READS,HIGH,static
+04_payment_delinquency,stg.loan_payments,TABLE,READS,HIGH,static
+04_payment_delinquency,ctrl,LIBRARY,USES_LIBRARY,HIGH,static
+04_payment_delinquency,out,LIBRARY,USES_LIBRARY,HIGH,static
+04_payment_delinquency,stg,LIBRARY,USES_LIBRARY,HIGH,static
+04_payment_delinquency,out.delinquency,TABLE,WRITES,HIGH,static
+04_payment_delinquency,out.loan_status,TABLE,WRITES,HIGH,static
+05_card_fraud_summary,stg.card_transactions,TABLE,READS,HIGH,static
+05_card_fraud_summary,out,LIBRARY,USES_LIBRARY,HIGH,static
+05_card_fraud_summary,stg,LIBRARY,USES_LIBRARY,HIGH,static
+05_card_fraud_summary,out.card_summary,TABLE,WRITES,HIGH,static
+05_card_fraud_summary,out.fraud_freq,TABLE,WRITES,HIGH,static
+06_macro_library,flag_high,MACRO,DEFINES,HIGH,static
+06_macro_library,summarize,MACRO,DEFINES,HIGH,static
+07_portfolio_report,flag_high,MACRO,CALLS,HIGH,static
+07_portfolio_report,summarize,MACRO,CALLS,HIGH,static
+07_portfolio_report,06_macro_library,PROGRAM,INCLUDES,HIGH,static
+07_portfolio_report,ctrl.macro_parameters,TABLE,READS,HIGH,static
+07_portfolio_report,out.loan_enriched,TABLE,READS,MEDIUM,argument ds= of %summarize
+07_portfolio_report,out.portfolio_by_segment,TABLE,READS,MEDIUM,argument ds= of %flag_high
+07_portfolio_report,ctrl,LIBRARY,USES_LIBRARY,HIGH,static
+07_portfolio_report,out,LIBRARY,USES_LIBRARY,HIGH,static
+07_portfolio_report,out.portfolio_by_segment,TABLE,WRITES,MEDIUM,argument out= of %summarize
+07_portfolio_report,out.portfolio_report,TABLE,WRITES,MEDIUM,argument out= of %flag_high
+08_period_driver,period_driver,MACRO,CALLS,HIGH,static
+08_period_driver,summarize,MACRO,CALLS,HIGH,static
+08_period_driver,period_driver,MACRO,DEFINES,HIGH,static
+08_period_driver,run_period,MACRO,DEFINES,HIGH,static
+08_period_driver,06_macro_library,PROGRAM,INCLUDES,HIGH,static
+08_period_driver,ctrl.reporting_periods,TABLE,READS,HIGH,static
+08_period_driver,out.delinquency,TABLE,READS,MEDIUM,mprint
+08_period_driver,out.delinquency,TABLE,READS,HIGH,static
+08_period_driver,ctrl,LIBRARY,USES_LIBRARY,HIGH,static
+08_period_driver,out,LIBRARY,USES_LIBRARY,HIGH,static
+08_period_driver,out.period_summary_&pid,TABLE,WRITES,LOW,argument out= of %summarize
+08_period_driver,out.period_summary_202509,TABLE,WRITES,MEDIUM,mprint
+08_period_driver,out.period_summary_202510,TABLE,WRITES,MEDIUM,mprint
+08_period_driver,out.period_summary_202511,TABLE,WRITES,MEDIUM,mprint
+08_period_driver,out.period_summary_202512,TABLE,WRITES,MEDIUM,mprint
+09_payment_model,out.loan_enriched,TABLE,READS,HIGH,static
+09_payment_model,out,LIBRARY,USES_LIBRARY,HIGH,static
+09_payment_model,out.reg_est,TABLE,WRITES,HIGH,static
+10_repayment_forecast,out.monthly_repay,TABLE,READS,HIGH,static
+10_repayment_forecast,stg.loan_payments,TABLE,READS,HIGH,static
+10_repayment_forecast,out,LIBRARY,USES_LIBRARY,HIGH,static
+10_repayment_forecast,stg,LIBRARY,USES_LIBRARY,HIGH,static
+10_repayment_forecast,out.fc,TABLE,WRITES,HIGH,static
+10_repayment_forecast,out.fc_est,TABLE,WRITES,HIGH,static
+10_repayment_forecast,out.monthly_repay,TABLE,WRITES,HIGH,static
+11_executive_report,ctrl.macro_parameters,TABLE,READS,HIGH,static
+11_executive_report,out.fc,TABLE,READS,HIGH,static
+11_executive_report,out.loan_enriched,TABLE,READS,HIGH,static
+11_executive_report,out.loan_status,TABLE,READS,HIGH,static
+11_executive_report,out.monthly_repay,TABLE,READS,HIGH,static
+11_executive_report,ctrl,LIBRARY,USES_LIBRARY,HIGH,static
+11_executive_report,out,LIBRARY,USES_LIBRARY,HIGH,static
+11_executive_report,out.exec_forecast,TABLE,WRITES,HIGH,static
+11_executive_report,out.exec_report,TABLE,WRITES,HIGH,static

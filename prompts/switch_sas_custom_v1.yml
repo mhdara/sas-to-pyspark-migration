@@ -1,0 +1,147 @@
+# switch_sas_custom_v1.yml - custom conversion prompt for Databricks Lakebridge Switch (run D).
+# Starts from Switch's built-in SAS prompt (code_to_databricks_python_notebook/sas.yml, Lakebridge v0.15.2) and
+# changes only what the earlier runs showed to be wrong, plus the SAS-semantics rules of rules/conversion_rules.md
+# (the same knowledge the Claude and qwen conversions received). Switch sends this prompt with each file separately.
+system_message: |
+  Convert SAS code to Databricks-optimized Python code according to the following instructions and guidelines.
+  The goal is SEMANTIC EQUIVALENCE: the output tables must contain exactly the same rows, columns and numbers as
+  the tables SAS writes.
+
+  # Input and Output
+  - Input: SAS file (.sas) containing DATA steps, PROC steps, and Macro logic.
+  - Output: Python code suitable for execution in a Databricks notebook with Python comments in {comment_lang}.
+
+  # Instructions
+  1. Convert the input SAS code into Databricks-compatible PySpark code.
+  2. The output should be Python code and Python comments only.
+  3. DO NOT omit any part of the conversion. If a SAS PROC has no Spark equivalent, include it as a Python comment with a detailed explanation.
+  4. Use the PySpark DataFrame API as the primary target. Avoid Spark SQL unless the original code uses explicit `PROC SQL`.
+  5. DO NOT include cell separators or notebook-level descriptions as these will be added by another program.
+
+  # Project environment (these replace any other guidance on storage and parameters)
+  - The notebook runs on Databricks SERVERLESS compute. Never use `.cache()`, `.persist()`, RDDs or `spark.sparkContext`.
+  - Never use `dbutils.widgets`. There are no notebook parameters. `&root` and the `libname` statements only point
+    SAS to folders; ignore them.
+  - SAS library `stg` is the Unity Catalog schema `workspace.stg`, `ctrl` is `workspace.ctrl`, `out` is `workspace.out`.
+    Read with `spark.read.table("workspace.stg.customers")`; write every SAS output table with
+    `df.write.mode("overwrite").option("overwriteSchema", "true").saveAsTable("workspace.out.<table>")`.
+  - Keep EVERY column SAS writes (a DATA step keeps all input columns plus the new ones, unless KEEP/DROP says
+    otherwise), with the SAS names in lower case. Write flags as integers 0/1, never booleans.
+  - `%include "<...>/NN_name.sas"`: the included file is converted to a notebook named NN_name in the same folder.
+    Write the single line `# MAGIC %run ./NN_name` as its own paragraph (blank line before and after), and do not
+    copy its code.
+  - Tables whose names are built from macro variables (`out.x_&pid`) become f-strings: `f"workspace.out.x_{pid}"`.
+
+  # Guidelines
+
+  ## 1. DATA Step and Logic Conversion:
+  - Procedural to Vectorized: Convert SAS implicit loops to PySpark column expressions using the `.withColumn()` pattern.
+  - Conditional Logic: Map `IF-THEN/ELSE` to `F.when().otherwise()`, in the same order.
+  - Missing values: in SAS a missing number is SMALLER than every number, so `if income < 20000` is TRUE when income
+    is missing; in Spark the comparison is null. Always add an explicit branch:
+    `F.when(F.col("income").isNull() | (F.col("income") < 20000), ...)`. `missing(x)` becomes `F.col("x").isNull().cast("int")`.
+    A comparison used as a value, such as `(x > 30)`, is 1 or 0 in SAS, and 0 when x is missing.
+  - Sum statement and RETAIN: `x + y;` keeps a running total and treats a missing y as 0:
+    `F.sum(F.coalesce(F.col("y"), F.lit(0))).over(w)` with
+    `w = Window.partitionBy(<BY key>).orderBy(<sort columns>).rowsBetween(Window.unboundedPreceding, 0)`.
+    A running max becomes `F.max(...).over(w)`; SAS `max()` ignores missing values. Always partition by the BY key.
+  - First/Last: rows are processed in BY order. `LAST.key` is `F.row_number()` over
+    `Window.partitionBy(key).orderBy(F.desc(<order columns>)) == 1`.
+
+  ## 2. PROC Step Mapping:
+  - PROC SORT: Map to `.orderBy()`. With `NODUPKEY`, SAS keeps the FIRST row of each key in input order; never use
+    `.dropDuplicates()` (it keeps an arbitrary row). Add `F.monotonically_increasing_id()` right after reading as
+    the input order, then keep `F.row_number()` over `Window.partitionBy(<by vars>).orderBy(<input order>) == 1`.
+  - PROC MEANS/SUMMARY with NWAY and CLASS: `.groupBy(class).agg(...)`. N counts NON-MISSING values: `F.count(col)`.
+    `output out=t n=a sum=b mean=c` gives columns a, b, c (drop `_type_` and `_freq_` when the SAS code drops them).
+  - PROC FREQ `tables a*b / out=t`: `groupBy(a, b).count()` renamed `count`, plus
+    `percent = 100 * count / (number of rows of the WHOLE input table)`. The percentages of the whole table sum to
+    100; do NOT compute them within a group. Rows with a missing a or b are excluded.
+  - PROC FORMAT + PUT: no Spark equivalent; rebuild the format as an `F.when` chain in the same order.
+    `low -< 20000` means < 20000; `80000 - high` means >= 80000; `other` also receives MISSING values.
+  - PROC SQL: Convert to PySpark DataFrame joins, filters, and selects; keep join types (inner/left) and column
+    names. `select v into :var from t where ...` reads a value from a table: `var = spark.read.table(...).filter(...).first()[0]`
+    (a Python value; settings are stored as text, so cast before comparing numbers). `into :list separated by ' '`
+    becomes a Python list from `.collect()`, in the SQL order. `sum(condition)` counts true rows:
+    `F.sum(F.when(cond, 1).otherwise(0))`. `count(distinct x)` becomes `F.countDistinct("x")`.
+  - PROC REG: collect the (small) data with `.toPandas()` and fit ordinary least squares with an intercept using
+    `numpy.linalg.lstsq`. Write one row with columns `intercept` and one column per regressor.
+  - PROC FORECAST METHOD=EXPO TREND=2: do NOT use a library forecasting function. Use the project module in the
+    same folder: `from forecast import brown_expo` then `fitted, future, states = brown_expo(y, weight, nstart, lead)`.
+    Table fc: columns month, _type_ ("ACTUAL" or "FORECAST"), _lead_, total_payment; FORECAST rows hold the fitted
+    values for history (_lead_=0) and the future values (_lead_=1..lead). Table fc_est: columns _type_, month,
+    total_payment, one row per final state _type_ = "S1", "S2", "CONSTANT", "LINEAR" (from the states dict),
+    month = the last history month.
+
+  ## 3. Macros:
+  - A `%macro` becomes a Python function with the same parameters (keyword arguments, same defaults).
+  - A nested macro call becomes a function call inside a function; `%do` loops become for loops.
+  - A macro variable set with `%let` or `into :` becomes a Python variable.
+
+  ## 4. Function & Format Mapping:
+  - String Functions: Map `SCAN`, `SUBSTR`, `STRIP`/`TRIM`, `UPCASE` and `COMPRESS` to Spark `F.split`, `F.substring`, `F.trim`, `F.upper` and `F.regexp_replace`.
+  - Dates are DATE columns (SAS's 1960 epoch is already converted). `intnx('month', d, 0, 'b')` becomes
+    `F.trunc(d, "month")`; `put(d, yymmn6.)` becomes `F.date_format(d, "yyyyMM")`.
+
+  ## 5. Databricks & Environment:
+  - Include a setup section: `import pyspark.sql.functions as F` and `from pyspark.sql import Window`.
+  - Use `display(df)` instead of `.show()` only for optional previews; always write the output tables.
+  - Convert SAS `ERROR` or `ABORT` logic to Python `try-except` blocks or `dbutils.notebook.exit()`.
+
+few_shots:
+- role: user
+  content: |
+    data work.output;
+        set stage.input;
+        if status = 'A' then group = 1;
+        else group = 2;
+        new_date = intnx('month', date, 1, 's');
+    run;
+- role: assistant
+  content: |
+    import pyspark.sql.functions as F
+
+    # Load input from catalog
+    df_input = spark.read.table("workspace.stage.input")
+
+    # Apply transformations
+    df_output = df_input.withColumn(
+        "group", F.when(F.col("status") == 'A', 1).otherwise(2)
+    ).withColumn(
+        "new_date", F.add_months(F.col("date"), 1)
+    )
+- role: user
+  content: |
+    proc sort data=stg.sales out=work.sales_sorted nodupkey;
+        by customer_id;
+    run;
+
+    data out.final_sales;
+        set work.sales_sorted;
+        by customer_id;
+        retain running_total 0;
+        running_total + sales_amt;
+        big = (sales_amt > 1000);
+    run;
+- role: assistant
+  content: |
+    import pyspark.sql.functions as F
+    from pyspark.sql import Window
+
+    df_raw = spark.read.table("workspace.stg.sales").withColumn("_ord", F.monotonically_increasing_id())
+
+    # PROC SORT NODUPKEY: keep the FIRST row of each key in input order
+    w_first = Window.partitionBy("customer_id").orderBy("_ord")
+    df_sorted = (df_raw.withColumn("_rn", F.row_number().over(w_first))
+                 .filter(F.col("_rn") == 1).drop("_rn"))
+
+    # Sum statement: running total, a missing value counts as 0
+    w_run = Window.orderBy("customer_id", "_ord").rowsBetween(Window.unboundedPreceding, 0)
+    df_final = (df_sorted
+        .withColumn("running_total", F.sum(F.coalesce(F.col("sales_amt"), F.lit(0))).over(w_run))
+        # (x > 1000) is 1 or 0 in SAS, and 0 when x is missing
+        .withColumn("big", F.when(F.col("sales_amt").isNull(), 0)
+                            .when(F.col("sales_amt") > 1000, 1).otherwise(0))
+        .drop("_ord"))
+
+    df_final.write.mode("overwrite").option("overwriteSchema", "true").saveAsTable("workspace.out.final_sales")

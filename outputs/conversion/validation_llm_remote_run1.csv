@@ -1,0 +1,414 @@
+program_id,table,column,check,expected_value,actual_value,passed,compared,method,run
+01_customer_clean,out.customers_clean,,row_count,500,500,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,,column_count,9,9,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,,column_names,"['annual_income', 'city', 'customer_id', 'customer_name', 'customer_since', 'income_band', 'income_missing', 'province', 'segment_code']","['annual_income', 'city', 'customer_id', 'customer_name', 'customer_since', 'income_band', 'income_missing', 'province', 'segment_code']",1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,customer_id,null_count,0,0,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,customer_id,sum,125250.0,125250.0,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,customer_id,min_max,"(np.float64(1.0), np.float64(500.0))","(np.float64(1.0), np.float64(500.0))",1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,customer_name,null_count,0,0,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,customer_name,max_length_chars,29,29,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,customer_name,max_length_utf8_bytes,30,30,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,customer_name,distinct_count,243,243,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,customer_name,exact_text_values,0,0,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,city,null_count,0,0,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,city,max_length_chars,15,15,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,city,max_length_utf8_bytes,16,16,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,city,distinct_count,10,10,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,city,exact_text_values,0,0,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,province,null_count,0,0,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,province,max_length_chars,2,2,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,province,max_length_utf8_bytes,2,2,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,province,distinct_count,1,1,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,province,exact_text_values,0,0,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,segment_code,null_count,0,0,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,segment_code,max_length_chars,7,7,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,segment_code,max_length_utf8_bytes,7,7,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,segment_code,distinct_count,5,5,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,segment_code,exact_text_values,0,0,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,annual_income,null_count,15,15,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,annual_income,sum,28920482.0,28920482.0,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,annual_income,min_max,"(np.float64(8741.0), np.float64(265515.0))","(np.float64(8741.0), np.float64(265515.0))",1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,customer_since,null_count,0,0,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,income_band,null_count,0,0,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,income_band,max_length_chars,4,4,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,income_band,max_length_utf8_bytes,4,4,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,income_band,distinct_count,3,3,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,income_band,exact_text_values,0,0,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,income_missing,null_count,0,0,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,income_missing,sum,15.0,15.0,1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,income_missing,min_max,"(np.float64(0.0), np.float64(1.0))","(np.float64(0.0), np.float64(1.0))",1,sas vs python,llm_remote,1
+01_customer_clean,out.customers_clean,,row_hash_sha256,0 rows only in sas,0 rows only in python,1,sas vs python,llm_remote,1
+01_customer_clean,,,planted_province_upper_case,,0 not QC,1,python output,llm_remote,1
+01_customer_clean,,,planted_missing_income_is_low,,"15 missing incomes, bands ['LOW']",1,python output,llm_remote,1
+02_loan_enrichment,out.loan_enriched,,row_count,799,799,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,,column_count,14,14,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,,column_names,"['customer_id', 'customer_name', 'income_band', 'interest_rate', 'loan_id', 'loan_type', 'monthly_payment', 'origination_date', 'principal', 'province', 'risk_band', 'segment_name', 'status', 'term_months']","['customer_id', 'customer_name', 'income_band', 'interest_rate', 'loan_id', 'loan_type', 'monthly_payment', 'origination_date', 'principal', 'province', 'risk_band', 'segment_name', 'status', 'term_months']",1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,loan_id,null_count,0,0,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,loan_id,sum,8309600.0,8309600.0,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,loan_id,min_max,"(np.float64(10001.0), np.float64(10799.0))","(np.float64(10001.0), np.float64(10799.0))",1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,customer_id,null_count,0,0,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,customer_id,sum,199536.0,199536.0,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,customer_id,min_max,"(np.float64(1.0), np.float64(500.0))","(np.float64(1.0), np.float64(500.0))",1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,loan_type,null_count,0,0,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,loan_type,max_length_chars,11,11,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,loan_type,max_length_utf8_bytes,11,11,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,loan_type,distinct_count,4,4,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,loan_type,exact_text_values,0,0,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,origination_date,null_count,0,0,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,principal,null_count,0,0,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,principal,sum,102501802.0,102501802.0,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,principal,min_max,"(np.float64(2142.0), np.float64(595897.0))","(np.float64(2142.0), np.float64(595897.0))",1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,interest_rate,null_count,0,0,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,interest_rate,sum,59.750099999999996,59.750099999999996,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,interest_rate,min_max,"(np.float64(0.0399), np.float64(0.1199))","(np.float64(0.0399), np.float64(0.1199))",1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,term_months,null_count,0,0,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,term_months,sum,99264.0,99264.0,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,term_months,min_max,"(np.float64(36.0), np.float64(300.0))","(np.float64(36.0), np.float64(300.0))",1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,status,null_count,0,0,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,status,max_length_chars,7,7,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,status,max_length_utf8_bytes,7,7,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,status,distinct_count,3,3,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,status,exact_text_values,0,0,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,monthly_payment,null_count,0,0,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,monthly_payment,sum,1003857.16,1003857.16,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,monthly_payment,min_max,"(np.float64(42.4), np.float64(6028.58))","(np.float64(42.4), np.float64(6028.58))",1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,customer_name,null_count,0,0,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,customer_name,max_length_chars,29,29,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,customer_name,max_length_utf8_bytes,30,30,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,customer_name,distinct_count,218,218,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,customer_name,exact_text_values,0,0,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,province,null_count,0,0,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,province,max_length_chars,2,2,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,province,max_length_utf8_bytes,2,2,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,province,distinct_count,1,1,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,province,exact_text_values,0,0,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,income_band,null_count,0,0,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,income_band,max_length_chars,4,4,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,income_band,max_length_utf8_bytes,4,4,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,income_band,distinct_count,3,3,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,income_band,exact_text_values,0,0,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,segment_name,null_count,0,0,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,segment_name,max_length_chars,21,21,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,segment_name,max_length_utf8_bytes,24,24,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,segment_name,distinct_count,5,5,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,segment_name,exact_text_values,0,0,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,risk_band,null_count,0,0,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,risk_band,max_length_chars,6,6,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,risk_band,max_length_utf8_bytes,6,6,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,risk_band,distinct_count,3,3,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,risk_band,exact_text_values,0,0,1,sas vs python,llm_remote,1
+02_loan_enrichment,out.loan_enriched,,row_hash_sha256,0 rows only in sas,0 rows only in python,1,sas vs python,llm_remote,1
+02_loan_enrichment,,,planted_orphan_loan_dropped,,"799 loans, customer 999 present: False",1,python output,llm_remote,1
+03_risk_format,out.customer_risk,,row_count,500,500,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,,column_count,10,10,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,,column_names,"['annual_income', 'city', 'customer_id', 'customer_name', 'customer_since', 'income_band', 'income_band_fmt', 'income_missing', 'province', 'segment_code']","['annual_income', 'city', 'customer_id', 'customer_name', 'customer_since', 'income_band', 'income_band_fmt', 'income_missing', 'province', 'segment_code']",1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,customer_id,null_count,0,0,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,customer_id,sum,125250.0,125250.0,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,customer_id,min_max,"(np.float64(1.0), np.float64(500.0))","(np.float64(1.0), np.float64(500.0))",1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,customer_name,null_count,0,0,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,customer_name,max_length_chars,29,29,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,customer_name,max_length_utf8_bytes,30,30,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,customer_name,distinct_count,243,243,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,customer_name,exact_text_values,0,0,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,city,null_count,0,0,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,city,max_length_chars,15,15,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,city,max_length_utf8_bytes,16,16,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,city,distinct_count,10,10,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,city,exact_text_values,0,0,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,province,null_count,0,0,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,province,max_length_chars,2,2,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,province,max_length_utf8_bytes,2,2,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,province,distinct_count,1,1,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,province,exact_text_values,0,0,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,segment_code,null_count,0,0,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,segment_code,max_length_chars,7,7,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,segment_code,max_length_utf8_bytes,7,7,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,segment_code,distinct_count,5,5,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,segment_code,exact_text_values,0,0,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,annual_income,null_count,15,15,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,annual_income,sum,28920482.0,28920482.0,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,annual_income,min_max,"(np.float64(8741.0), np.float64(265515.0))","(np.float64(8741.0), np.float64(265515.0))",1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,customer_since,null_count,0,0,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,income_band,null_count,0,0,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,income_band,max_length_chars,4,4,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,income_band,max_length_utf8_bytes,4,4,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,income_band,distinct_count,3,3,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,income_band,exact_text_values,0,0,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,income_missing,null_count,0,0,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,income_missing,sum,15.0,15.0,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,income_missing,min_max,"(np.float64(0.0), np.float64(1.0))","(np.float64(0.0), np.float64(1.0))",1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,income_band_fmt,null_count,0,0,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,income_band_fmt,max_length_chars,7,7,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,income_band_fmt,max_length_utf8_bytes,7,7,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,income_band_fmt,distinct_count,4,4,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,income_band_fmt,exact_text_values,0,0,1,sas vs python,llm_remote,1
+03_risk_format,out.customer_risk,,row_hash_sha256,0 rows only in sas,0 rows only in python,1,sas vs python,llm_remote,1
+03_risk_format,,,planted_missing_income_is_unknown,,bands of missing incomes: ['UNKNOWN'],1,python output,llm_remote,1
+04_payment_delinquency,out.delinquency,,row_count,21411,21411,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,,column_count,10,10,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,,column_names,"['cum_paid', 'days_past_due', 'delinquent_flag', 'interest_paid', 'loan_id', 'max_dpd', 'payment_amount', 'payment_date', 'period_id', 'principal_paid']","['cum_paid', 'days_past_due', 'delinquent_flag', 'interest_paid', 'loan_id', 'max_dpd', 'payment_amount', 'payment_date', 'period_id', 'principal_paid']",1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,loan_id,null_count,0,0,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,loan_id,sum,220395001.0,220395001.0,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,loan_id,min_max,"(np.float64(10001.0), np.float64(10800.0))","(np.float64(10001.0), np.float64(10800.0))",1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,payment_date,null_count,0,0,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,payment_amount,null_count,0,0,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,payment_amount,sum,24572792.36,24572792.36,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,payment_amount,min_max,"(np.float64(0.0), np.float64(6028.58))","(np.float64(0.0), np.float64(6028.58))",1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,principal_paid,null_count,0,0,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,principal_paid,sum,9812700.7,9812700.7,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,principal_paid,min_max,"(np.float64(0.0), np.float64(1777.58))","(np.float64(0.0), np.float64(1777.58))",1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,interest_paid,null_count,0,0,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,interest_paid,sum,14760091.66,14760091.66,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,interest_paid,min_max,"(np.float64(0.0), np.float64(5723.18))","(np.float64(0.0), np.float64(5723.18))",1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,days_past_due,null_count,0,0,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,days_past_due,sum,129930.0,129930.0,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,days_past_due,min_max,"(np.float64(0.0), np.float64(45.0))","(np.float64(0.0), np.float64(45.0))",1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,period_id,null_count,0,0,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,period_id,max_length_chars,6,6,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,period_id,max_length_utf8_bytes,6,6,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,period_id,distinct_count,48,48,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,period_id,exact_text_values,0,0,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,max_dpd,null_count,0,0,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,max_dpd,sum,729990.0,729990.0,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,max_dpd,min_max,"(np.float64(0.0), np.float64(45.0))","(np.float64(0.0), np.float64(45.0))",1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,cum_paid,null_count,0,0,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,cum_paid,sum,417771592.43,417771592.43,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,cum_paid,min_max,"(np.float64(0.0), np.float64(253200.36))","(np.float64(0.0), np.float64(253200.36))",1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,delinquent_flag,null_count,0,0,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,delinquent_flag,sum,2196.0,2196.0,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,delinquent_flag,min_max,"(np.float64(0.0), np.float64(1.0))","(np.float64(0.0), np.float64(1.0))",1,sas vs python,llm_remote,1
+04_payment_delinquency,out.delinquency,,row_hash_sha256,0 rows only in sas,0 rows only in python,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.loan_status,,row_count,800,800,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.loan_status,,column_count,3,3,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.loan_status,,column_names,"['cum_paid', 'loan_id', 'max_dpd']","['cum_paid', 'loan_id', 'max_dpd']",1,sas vs python,llm_remote,1
+04_payment_delinquency,out.loan_status,loan_id,null_count,0,0,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.loan_status,loan_id,sum,8320400.0,8320400.0,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.loan_status,loan_id,min_max,"(np.float64(10001.0), np.float64(10800.0))","(np.float64(10001.0), np.float64(10800.0))",1,sas vs python,llm_remote,1
+04_payment_delinquency,out.loan_status,max_dpd,null_count,0,0,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.loan_status,max_dpd,sum,33045.0,33045.0,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.loan_status,max_dpd,min_max,"(np.float64(0.0), np.float64(45.0))","(np.float64(0.0), np.float64(45.0))",1,sas vs python,llm_remote,1
+04_payment_delinquency,out.loan_status,cum_paid,null_count,0,0,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.loan_status,cum_paid,sum,24572792.360000003,24572792.360000003,1,sas vs python,llm_remote,1
+04_payment_delinquency,out.loan_status,cum_paid,min_max,"(np.float64(348.74), np.float64(253200.36))","(np.float64(348.74), np.float64(253200.36))",1,sas vs python,llm_remote,1
+04_payment_delinquency,out.loan_status,,row_hash_sha256,0 rows only in sas,0 rows only in python,1,sas vs python,llm_remote,1
+04_payment_delinquency,,,planted_duplicate_payment_removed,,"21411 rows, 0 duplicates",1,python output,llm_remote,1
+05_card_fraud_summary,out.card_summary,,row_count,6,6,1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.card_summary,,column_count,4,4,1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.card_summary,,column_names,"['avg_amount', 'merchant_category', 'n_txn', 'total_amount']","['avg_amount', 'merchant_category', 'n_txn', 'total_amount']",1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.card_summary,merchant_category,null_count,0,0,1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.card_summary,merchant_category,max_length_chars,11,11,1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.card_summary,merchant_category,max_length_utf8_bytes,11,11,1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.card_summary,merchant_category,distinct_count,6,6,1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.card_summary,merchant_category,exact_text_values,0,0,1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.card_summary,n_txn,null_count,0,0,1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.card_summary,n_txn,sum,5000.0,5000.0,1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.card_summary,n_txn,min_max,"(np.float64(807.0), np.float64(881.0))","(np.float64(807.0), np.float64(881.0))",1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.card_summary,total_amount,null_count,0,0,1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.card_summary,total_amount,sum,604767.25,604767.25,1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.card_summary,total_amount,min_max,"(np.float64(95541.96), np.float64(106427.47))","(np.float64(95541.96), np.float64(106427.47))",1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.card_summary,avg_amount,null_count,0,0,1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.card_summary,avg_amount,sum,725.627665,725.627665,1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.card_summary,avg_amount,min_max,"(np.float64(118.245), np.float64(125.652267))","(np.float64(118.245), np.float64(125.652267))",1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.card_summary,,row_hash_sha256,0 rows only in sas,0 rows only in python,1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.fraud_freq,,row_count,12,12,1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.fraud_freq,,column_count,4,4,1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.fraud_freq,,column_names,"['count', 'fraud_flag', 'merchant_category', 'percent']","['count', 'fraud_flag', 'merchant_category', 'percent']",1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.fraud_freq,merchant_category,null_count,0,0,1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.fraud_freq,merchant_category,max_length_chars,11,11,1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.fraud_freq,merchant_category,max_length_utf8_bytes,11,11,1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.fraud_freq,merchant_category,distinct_count,6,6,1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.fraud_freq,merchant_category,exact_text_values,0,0,1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.fraud_freq,fraud_flag,null_count,0,0,1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.fraud_freq,fraud_flag,sum,6.0,6.0,1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.fraud_freq,fraud_flag,min_max,"(np.float64(0.0), np.float64(1.0))","(np.float64(0.0), np.float64(1.0))",1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.fraud_freq,count,null_count,0,0,1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.fraud_freq,count,sum,5000.0,5000.0,1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.fraud_freq,count,min_max,"(np.float64(4.0), np.float64(877.0))","(np.float64(4.0), np.float64(877.0))",1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.fraud_freq,percent,null_count,0,0,1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.fraud_freq,percent,sum,99.99999999999999,99.99999999999999,1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.fraud_freq,percent,min_max,"(np.float64(0.08), np.float64(17.54))","(np.float64(0.08), np.float64(17.54))",1,sas vs python,llm_remote,1
+05_card_fraud_summary,out.fraud_freq,,row_hash_sha256,0 rows only in sas,0 rows only in python,1,sas vs python,llm_remote,1
+05_card_fraud_summary,,,planted_refunds_and_zeros_in_totals,,total 604767.25 vs source 604767.25,1,python output,llm_remote,1
+07_portfolio_report,out.portfolio_by_segment,,row_count,5,5,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_by_segment,,column_count,4,4,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_by_segment,,column_names,"['avg', 'n', 'segment_name', 'total']","['avg', 'n', 'segment_name', 'total']",1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_by_segment,segment_name,null_count,0,0,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_by_segment,segment_name,max_length_chars,21,21,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_by_segment,segment_name,max_length_utf8_bytes,24,24,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_by_segment,segment_name,distinct_count,5,5,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_by_segment,segment_name,exact_text_values,0,0,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_by_segment,n,null_count,0,0,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_by_segment,n,sum,799.0,799.0,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_by_segment,n,min_max,"(np.float64(47.0), np.float64(418.0))","(np.float64(47.0), np.float64(418.0))",1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_by_segment,total,null_count,0,0,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_by_segment,total,sum,102501802.0,102501802.0,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_by_segment,total,min_max,"(np.float64(8385020.0), np.float64(57754110.0))","(np.float64(8385020.0), np.float64(57754110.0))",1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_by_segment,avg,null_count,0,0,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_by_segment,avg,sum,648229.148246,648229.148246,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_by_segment,avg,min_max,"(np.float64(89540.382979), np.float64(178404.680851))","(np.float64(89540.382979), np.float64(178404.680851))",1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_by_segment,,row_hash_sha256,0 rows only in sas,0 rows only in python,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_report,,row_count,5,5,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_report,,column_count,5,5,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_report,,column_names,"['avg', 'high_flag', 'n', 'segment_name', 'total']","['avg', 'high_flag', 'n', 'segment_name', 'total']",1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_report,segment_name,null_count,0,0,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_report,segment_name,max_length_chars,21,21,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_report,segment_name,max_length_utf8_bytes,24,24,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_report,segment_name,distinct_count,5,5,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_report,segment_name,exact_text_values,0,0,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_report,n,null_count,0,0,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_report,n,sum,799.0,799.0,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_report,n,min_max,"(np.float64(47.0), np.float64(418.0))","(np.float64(47.0), np.float64(418.0))",1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_report,total,null_count,0,0,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_report,total,sum,102501802.0,102501802.0,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_report,total,min_max,"(np.float64(8385020.0), np.float64(57754110.0))","(np.float64(8385020.0), np.float64(57754110.0))",1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_report,avg,null_count,0,0,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_report,avg,sum,648229.148246,648229.148246,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_report,avg,min_max,"(np.float64(89540.382979), np.float64(178404.680851))","(np.float64(89540.382979), np.float64(178404.680851))",1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_report,high_flag,null_count,0,0,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_report,high_flag,sum,5.0,5.0,1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_report,high_flag,min_max,"(np.float64(1.0), np.float64(1.0))","(np.float64(1.0), np.float64(1.0))",1,sas vs python,llm_remote,1
+07_portfolio_report,out.portfolio_report,,row_hash_sha256,0 rows only in sas,0 rows only in python,1,sas vs python,llm_remote,1
+09_payment_model,out.reg_est,,row_count,1,1,1,sas vs python,llm_remote,1
+09_payment_model,out.reg_est,,column_count,4,4,1,sas vs python,llm_remote,1
+09_payment_model,out.reg_est,,column_names,"['intercept', 'interest_rate', 'principal', 'term_months']","['intercept', 'interest_rate', 'principal', 'term_months']",1,sas vs python,llm_remote,1
+09_payment_model,out.reg_est,intercept,null_count,0,0,1,sas vs python,llm_remote,1
+09_payment_model,out.reg_est,intercept,sum,-40.371325,-40.371325,1,sas vs python,llm_remote,1
+09_payment_model,out.reg_est,intercept,min_max,"(np.float64(-40.371325), np.float64(-40.371325))","(np.float64(-40.371325), np.float64(-40.371325))",1,sas vs python,llm_remote,1
+09_payment_model,out.reg_est,principal,null_count,0,0,1,sas vs python,llm_remote,1
+09_payment_model,out.reg_est,principal,sum,0.008183,0.008183,1,sas vs python,llm_remote,1
+09_payment_model,out.reg_est,principal,min_max,"(np.float64(0.008183), np.float64(0.008183))","(np.float64(0.008183), np.float64(0.008183))",1,sas vs python,llm_remote,1
+09_payment_model,out.reg_est,interest_rate,null_count,0,0,1,sas vs python,llm_remote,1
+09_payment_model,out.reg_est,interest_rate,sum,7976.898091,7976.898091,1,sas vs python,llm_remote,1
+09_payment_model,out.reg_est,interest_rate,min_max,"(np.float64(7976.898091), np.float64(7976.898091))","(np.float64(7976.898091), np.float64(7976.898091))",1,sas vs python,llm_remote,1
+09_payment_model,out.reg_est,term_months,null_count,0,0,1,sas vs python,llm_remote,1
+09_payment_model,out.reg_est,term_months,sum,-2.813531,-2.813531,1,sas vs python,llm_remote,1
+09_payment_model,out.reg_est,term_months,min_max,"(np.float64(-2.813531), np.float64(-2.813531))","(np.float64(-2.813531), np.float64(-2.813531))",1,sas vs python,llm_remote,1
+09_payment_model,out.reg_est,,row_hash_sha256,0 rows only in sas,0 rows only in python,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc,,row_count,108,108,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc,,column_count,4,4,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc,,column_names,"['_lead_', '_type_', 'month', 'total_payment']","['_lead_', '_type_', 'month', 'total_payment']",1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc,month,null_count,0,0,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc,_type_,null_count,0,0,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc,_type_,max_length_chars,8,8,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc,_type_,max_length_utf8_bytes,8,8,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc,_type_,distinct_count,2,2,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc,_type_,exact_text_values,0,0,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc,_lead_,null_count,0,0,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc,_lead_,sum,78.0,78.0,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc,_lead_,min_max,"(np.float64(0.0), np.float64(12.0))","(np.float64(0.0), np.float64(12.0))",1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc,total_payment,null_count,0,0,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc,total_payment,sum,61442534.43205701,61442534.43205701,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc,total_payment,min_max,"(np.float64(22595.778846), np.float64(1080279.685514))","(np.float64(22595.778846), np.float64(1080279.685514))",1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc,,row_hash_sha256,0 rows only in sas,0 rows only in python,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc_est,,row_count,4,4,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc_est,,column_count,3,3,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc_est,,column_names,"['_type_', 'month', 'total_payment']","['_type_', 'month', 'total_payment']",1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc_est,_type_,null_count,0,0,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc_est,_type_,max_length_chars,8,8,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc_est,_type_,max_length_utf8_bytes,8,8,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc_est,_type_,distinct_count,4,4,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc_est,_type_,exact_text_values,0,0,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc_est,month,null_count,0,0,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc_est,total_payment,null_count,0,0,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc_est,total_payment,sum,2622257.410574,2622257.410574,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc_est,total_payment,min_max,"(np.float64(13161.311616), np.float64(922343.946118))","(np.float64(13161.311616), np.float64(922343.946118))",1,sas vs python,llm_remote,1
+10_repayment_forecast,out.fc_est,,row_hash_sha256,0 rows only in sas,0 rows only in python,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.monthly_repay,,row_count,48,48,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.monthly_repay,,column_count,2,2,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.monthly_repay,,column_names,"['month', 'total_payment']","['month', 'total_payment']",1,sas vs python,llm_remote,1
+10_repayment_forecast,out.monthly_repay,month,null_count,0,0,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.monthly_repay,total_payment,null_count,0,0,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.monthly_repay,total_payment,sum,24574013.08,24574013.08,1,sas vs python,llm_remote,1
+10_repayment_forecast,out.monthly_repay,total_payment,min_max,"(np.float64(24411.15), np.float64(921498.09))","(np.float64(24411.15), np.float64(921498.09))",1,sas vs python,llm_remote,1
+10_repayment_forecast,out.monthly_repay,,row_hash_sha256,0 rows only in sas,0 rows only in python,1,sas vs python,llm_remote,1
+11_executive_report,out.exec_forecast,,row_count,12,12,1,sas vs python,llm_remote,1
+11_executive_report,out.exec_forecast,,column_count,2,2,1,sas vs python,llm_remote,1
+11_executive_report,out.exec_forecast,,column_names,"['forecast_payment', 'month']","['forecast_payment', 'month']",1,sas vs python,llm_remote,1
+11_executive_report,out.exec_forecast,month,null_count,0,0,1,sas vs python,llm_remote,1
+11_executive_report,out.exec_forecast,forecast_payment,null_count,0,0,1,sas vs python,llm_remote,1
+11_executive_report,out.exec_forecast,forecast_payment,sum,12094709.659493,12094709.659493,1,sas vs python,llm_remote,1
+11_executive_report,out.exec_forecast,forecast_payment,min_max,"(np.float64(935505.257734), np.float64(1080279.685514))","(np.float64(935505.257734), np.float64(1080279.685514))",1,sas vs python,llm_remote,1
+11_executive_report,out.exec_forecast,,row_hash_sha256,0 rows only in sas,0 rows only in python,1,sas vs python,llm_remote,1
+11_executive_report,out.exec_report,,row_count,5,5,1,sas vs python,llm_remote,1
+11_executive_report,out.exec_report,,column_count,4,4,1,sas vs python,llm_remote,1
+11_executive_report,out.exec_report,,column_names,"['n_delinquent_loans', 'n_loans', 'segment_name', 'total_principal']","['n_delinquent_loans', 'n_loans', 'segment_name', 'total_principal']",1,sas vs python,llm_remote,1
+11_executive_report,out.exec_report,segment_name,null_count,0,0,1,sas vs python,llm_remote,1
+11_executive_report,out.exec_report,segment_name,max_length_chars,21,21,1,sas vs python,llm_remote,1
+11_executive_report,out.exec_report,segment_name,max_length_utf8_bytes,24,24,1,sas vs python,llm_remote,1
+11_executive_report,out.exec_report,segment_name,distinct_count,5,5,1,sas vs python,llm_remote,1
+11_executive_report,out.exec_report,segment_name,exact_text_values,0,0,1,sas vs python,llm_remote,1
+11_executive_report,out.exec_report,n_loans,null_count,0,0,1,sas vs python,llm_remote,1
+11_executive_report,out.exec_report,n_loans,sum,799.0,799.0,1,sas vs python,llm_remote,1
+11_executive_report,out.exec_report,n_loans,min_max,"(np.float64(47.0), np.float64(418.0))","(np.float64(47.0), np.float64(418.0))",1,sas vs python,llm_remote,1
+11_executive_report,out.exec_report,n_delinquent_loans,null_count,0,0,1,sas vs python,llm_remote,1
+11_executive_report,out.exec_report,n_delinquent_loans,sum,713.0,713.0,1,sas vs python,llm_remote,1
+11_executive_report,out.exec_report,n_delinquent_loans,min_max,"(np.float64(40.0), np.float64(371.0))","(np.float64(40.0), np.float64(371.0))",1,sas vs python,llm_remote,1
+11_executive_report,out.exec_report,total_principal,null_count,0,0,1,sas vs python,llm_remote,1
+11_executive_report,out.exec_report,total_principal,sum,102501802.0,102501802.0,1,sas vs python,llm_remote,1
+11_executive_report,out.exec_report,total_principal,min_max,"(np.float64(8385020.0), np.float64(57754110.0))","(np.float64(8385020.0), np.float64(57754110.0))",1,sas vs python,llm_remote,1
+11_executive_report,out.exec_report,,row_hash_sha256,0 rows only in sas,0 rows only in python,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202509,,row_count,2,2,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202509,,column_count,4,4,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202509,,column_names,"['avg', 'delinquent_flag', 'n', 'total']","['avg', 'delinquent_flag', 'n', 'total']",1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202509,delinquent_flag,null_count,0,0,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202509,delinquent_flag,sum,1.0,1.0,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202509,delinquent_flag,min_max,"(np.float64(0.0), np.float64(1.0))","(np.float64(0.0), np.float64(1.0))",1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202509,n,null_count,0,0,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202509,n,sum,800.0,800.0,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202509,n,min_max,"(np.float64(89.0), np.float64(711.0))","(np.float64(89.0), np.float64(711.0))",1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202509,total,null_count,0,0,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202509,total,sum,894072.69,894072.69,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202509,total,min_max,"(np.float64(0.0), np.float64(894072.69))","(np.float64(0.0), np.float64(894072.69))",1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202509,avg,null_count,0,0,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202509,avg,sum,1257.486203,1257.486203,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202509,avg,min_max,"(np.float64(0.0), np.float64(1257.486203))","(np.float64(0.0), np.float64(1257.486203))",1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202509,,row_hash_sha256,0 rows only in sas,0 rows only in python,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202510,,row_count,2,2,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202510,,column_count,4,4,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202510,,column_names,"['avg', 'delinquent_flag', 'n', 'total']","['avg', 'delinquent_flag', 'n', 'total']",1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202510,delinquent_flag,null_count,0,0,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202510,delinquent_flag,sum,1.0,1.0,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202510,delinquent_flag,min_max,"(np.float64(0.0), np.float64(1.0))","(np.float64(0.0), np.float64(1.0))",1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202510,n,null_count,0,0,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202510,n,sum,800.0,800.0,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202510,n,min_max,"(np.float64(79.0), np.float64(721.0))","(np.float64(79.0), np.float64(721.0))",1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202510,total,null_count,0,0,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202510,total,sum,889727.95,889727.95,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202510,total,min_max,"(np.float64(0.0), np.float64(889727.95))","(np.float64(0.0), np.float64(889727.95))",1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202510,avg,null_count,0,0,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202510,avg,sum,1234.019348,1234.019348,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202510,avg,min_max,"(np.float64(0.0), np.float64(1234.019348))","(np.float64(0.0), np.float64(1234.019348))",1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202510,,row_hash_sha256,0 rows only in sas,0 rows only in python,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202511,,row_count,2,2,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202511,,column_count,4,4,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202511,,column_names,"['avg', 'delinquent_flag', 'n', 'total']","['avg', 'delinquent_flag', 'n', 'total']",1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202511,delinquent_flag,null_count,0,0,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202511,delinquent_flag,sum,1.0,1.0,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202511,delinquent_flag,min_max,"(np.float64(0.0), np.float64(1.0))","(np.float64(0.0), np.float64(1.0))",1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202511,n,null_count,0,0,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202511,n,sum,800.0,800.0,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202511,n,min_max,"(np.float64(82.0), np.float64(718.0))","(np.float64(82.0), np.float64(718.0))",1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202511,total,null_count,0,0,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202511,total,sum,895080.11,895080.11,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202511,total,min_max,"(np.float64(0.0), np.float64(895080.11))","(np.float64(0.0), np.float64(895080.11))",1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202511,avg,null_count,0,0,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202511,avg,sum,1246.62968,1246.62968,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202511,avg,min_max,"(np.float64(0.0), np.float64(1246.62968))","(np.float64(0.0), np.float64(1246.62968))",1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202511,,row_hash_sha256,0 rows only in sas,0 rows only in python,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202512,,row_count,2,2,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202512,,column_count,4,4,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202512,,column_names,"['avg', 'delinquent_flag', 'n', 'total']","['avg', 'delinquent_flag', 'n', 'total']",1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202512,delinquent_flag,null_count,0,0,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202512,delinquent_flag,sum,1.0,1.0,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202512,delinquent_flag,min_max,"(np.float64(0.0), np.float64(1.0))","(np.float64(0.0), np.float64(1.0))",1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202512,n,null_count,0,0,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202512,n,sum,800.0,800.0,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202512,n,min_max,"(np.float64(86.0), np.float64(714.0))","(np.float64(86.0), np.float64(714.0))",1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202512,total,null_count,0,0,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202512,total,sum,897288.48,897288.48,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202512,total,min_max,"(np.float64(0.0), np.float64(897288.48))","(np.float64(0.0), np.float64(897288.48))",1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202512,avg,null_count,0,0,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202512,avg,sum,1256.706555,1256.706555,1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202512,avg,min_max,"(np.float64(0.0), np.float64(1256.706555))","(np.float64(0.0), np.float64(1256.706555))",1,sas vs python,llm_remote,1
+08_period_driver,out.period_summary_202512,,row_hash_sha256,0 rows only in sas,0 rows only in python,1,sas vs python,llm_remote,1
+08_period_driver,,,planted_one_table_per_active_period,,"period_summary_202509, period_summary_202510, period_summary_202511, period_summary_202512",1,python output,llm_remote,1

@@ -1,0 +1,44 @@
+167                                                        The SAS System                     Monday, 28 September, 2026 12:41:00 AM
+
+1480       
+1481       /*----------------------------------------------------------------------------------------------
+1482          10_repayment_forecast.sas - total repayments per month, and a 12-month forecast.
+1483       
+1484          What it does: PROC SQL sums the payments per calendar month (48 months, 2022-2025); PROC FORECAST
+1485            then forecasts 12 more months with double exponential smoothing (METHOD=EXPO TREND=2), with
+1486            every option written out (WEIGHT=0.2, NSTART=12) so Python can reproduce it exactly.
+1487          Reads:  stg.loan_payments
+1488          Writes: out.monthly_repay (48 rows), out.fc (actuals, fitted values and forecasts, OUTFULL),
+1489                  out.fc_est (the method's final internal values)
+1490          Note:   reads stg.loan_payments ON PURPOSE, including the planted duplicate row: one month is
+1491                  slightly high, and Python must reproduce that too (see docs/notes.md).
+1492          Trap:   Python has no PROC FORECAST: the method is rebuilt by hand (Phase 11). SAS logs a
+1493                  warning that the procedure is obsolete.
+1494       ----------------------------------------------------------------------------------------------*/
+1495       libname stg "&root/stg";
+1496       libname out "&root/out";
+1497       
+1498       proc sql;
+1499         create table out.monthly_repay as
+1500         select intnx('month', payment_date, 0, 'b') as month format=yymmdd10.,
+1501                sum(payment_amount) as total_payment
+1502         from stg.loan_payments
+1503         group by calculated month
+1504         order by calculated month;
+1505       quit;
+1506       
+1507       proc forecast data=out.monthly_repay interval=month
+1508                     method=expo trend=2 weight=0.2 nstart=12 lead=12
+1509                     out=out.fc outfull outest=out.fc_est;
+1510         id month;
+1511         var total_payment;
+1512       run;
+WARNING: The FORECAST Procedure is obsolete. You may continue to use PROC FORECAST but this is not recommended. For time series 
+         forecasting, consider using newer procedures such as the ESM Procedure, the UCM Procedure, or the ARIMA Procedure.
+1513       
+1514       
+1515       
+1516       
+168                                                        The SAS System                     Monday, 28 September, 2026 12:41:00 AM
+
+1517       

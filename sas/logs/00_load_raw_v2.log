@@ -1,0 +1,100 @@
+125                                                        The SAS System                     Monday, 28 September, 2026 12:40:00 AM
+
+983        
+984        /*----------------------------------------------------------------------------------------------
+985           00_load_raw.sas - load the generated CSV files into SAS tables (.sas7bdat).
+986        
+987           What it does: reads each CSV in &root/raw with a DATA step (INFILE + INPUT) and saves it as a
+988             permanent SAS table. Every column gets an explicit type and length (LENGTH), and dates are read
+989             with the yymmdd10. informat. No PROC IMPORT: it would guess types and lengths.
+990           Reads:  &root/raw/*.csv (7 files, UTF-8)
+991           Writes: ctrl.client_segments, ctrl.reporting_periods, ctrl.macro_parameters,
+992                   stg.customers, stg.loans, stg.loan_payments, stg.card_transactions
+993           Checks: prints the longest customer name in bytes (expect 30) and the missing incomes (expect 15).
+994           Trap:   SAS lengths count BYTES and SAS cuts longer text silently. The customer_name length is
+995                   set in one place (&name_len): v1 = $12 cuts names, v2 = $60 keeps them all.
+996                   python/sas_load.py runs both versions; &root is set by python/sas_session.py.
+997        ----------------------------------------------------------------------------------------------*/
+998        libname stg  "&root/stg";
+999        libname ctrl "&root/ctrl";
+1000       
+1001       %let name_len = $60;   /* v1 = $12 (too short, cuts names) | v2 = $60 (correct) */
+1002       
+1003       filename f_seg "&root/raw/ctrl_client_segments.csv" encoding="utf-8";
+1004       data ctrl.client_segments;
+1005         infile f_seg dsd firstobs=2 truncover;
+1006         length segment_code $10 segment_name $60 risk_band $10 min_income 8 max_income 8;
+1007         input segment_code $ segment_name $ risk_band $ min_income max_income;
+1008       run;
+1009       
+1010       filename f_per "&root/raw/ctrl_reporting_periods.csv" encoding="utf-8";
+1011       data ctrl.reporting_periods;
+1012         infile f_per dsd firstobs=2 truncover;
+1013         length period_id $6 period_start 8 period_label $20 active_flag 8;
+1014         informat period_start yymmdd10.;
+1015         format period_start yymmdd10.;
+1016         input period_id $ period_start period_label $ active_flag;
+1017       run;
+1018       
+1019       filename f_par "&root/raw/ctrl_macro_parameters.csv" encoding="utf-8";
+1020       data ctrl.macro_parameters;
+1021         infile f_par dsd firstobs=2 truncover;
+1022         length param_name $32 param_value $32;
+1023         input param_name $ param_value $;
+1024       run;
+1025       
+1026       filename f_cus "&root/raw/customers.csv" encoding="utf-8";
+1027       data stg.customers(label="customers loaded by 00_load_raw, customer_name length &name_len");
+1028         infile f_cus dsd firstobs=2 truncover;
+1029         length customer_id 8 customer_name &name_len city $40 province $2
+1030                segment_code $10 annual_income 8 customer_since 8;
+1031         informat customer_since yymmdd10.;
+1032         format customer_since yymmdd10.;
+1033         input customer_id customer_name $ city $ province $ segment_code $
+1034               annual_income customer_since;
+1035       run;
+1036       
+1037       filename f_loa "&root/raw/loans.csv" encoding="utf-8";
+1038       data stg.loans;
+1039         infile f_loa dsd firstobs=2 truncover;
+1040         length loan_id 8 customer_id 8 loan_type $12 origination_date 8 principal 8
+1041                interest_rate 8 term_months 8 status $10 monthly_payment 8;
+1042         informat origination_date yymmdd10.;
+1043         format origination_date yymmdd10.;
+1044         input loan_id customer_id loan_type $ origination_date principal
+1045               interest_rate term_months status $ monthly_payment;
+1046       run;
+1047       
+1048       filename f_pay "&root/raw/loan_payments.csv" encoding="utf-8";
+1049       data stg.loan_payments;
+1050         infile f_pay dsd firstobs=2 truncover;
+1051         length loan_id 8 payment_date 8 payment_amount 8 principal_paid 8
+1052                interest_paid 8 days_past_due 8;
+1053         informat payment_date yymmdd10.;
+1054         format payment_date yymmdd10.;
+1055         input loan_id payment_date payment_amount principal_paid interest_paid days_past_due;
+1056       run;
+1057       
+1058       filename f_crd "&root/raw/card_transactions.csv" encoding="utf-8";
+1059       data stg.card_transactions;
+1060         infile f_crd dsd firstobs=2 truncover;
+1061         length transaction_id 8 customer_id 8 transaction_date 8 merchant_category $20
+1062                amount 8 fraud_flag 8;
+1063         informat transaction_date yymmdd10.;
+1064         format transaction_date yymmdd10.;
+1065         input transaction_id customer_id transaction_date merchant_category $ amount fraud_flag;
+1066       run;
+1067       
+1068       /* quick check: longest customer name in bytes (CSV value: 30) and missing incomes (CSV: 15) */
+1069       proc sql;
+1070         select max(length(customer_name)) as max_name_bytes,
+1071                nmiss(annual_income)       as missing_income
+1072         from stg.customers;
+1073       quit;
+1074       
+1075       
+1076       
+1077       
+126                                                        The SAS System                     Monday, 28 September, 2026 12:40:00 AM
+
+1078       

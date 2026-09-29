@@ -1,0 +1,13 @@
+program_id,final_status,attempts,reason,method,run
+00_load_raw,REPLACED_BY_DATA_MIGRATION,0,,,
+01_customer_clean,VALIDATED,1,,llm_local,1.0
+02_loan_enrichment,VALIDATED,1,,llm_local,1.0
+03_risk_format,MANUAL_REVIEW,2,execution_error,llm_local,1.0
+04_payment_delinquency,VALIDATED,2,,llm_local,1.0
+05_card_fraud_summary,VALIDATED,1,,llm_local,1.0
+06_macro_library,MANUAL_REVIEW,1,a program using it failed,llm_local,1.0
+07_portfolio_report,MANUAL_REVIEW,2,execution_error,llm_local,1.0
+08_period_driver,MANUAL_REVIEW,2,execution_error,llm_local,1.0
+09_payment_model,MANUAL_REVIEW,2,execution_error,llm_local,1.0
+10_repayment_forecast,MANUAL_REVIEW,2,execution_error,llm_local,1.0
+11_executive_report,MANUAL_REVIEW,2,execution_error,llm_local,1.0

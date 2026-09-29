@@ -1,0 +1,14 @@
+# macOS
+.DS_Store
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+# generated data: rebuilt from code (root data/ only: sas/data/ holds SAS tables and is versioned)
+/data/
+# SAS-licensed encryption jars for SASPy: never commit
+*.rutil*.jar
+# local secrets (API keys): never commit
+.env

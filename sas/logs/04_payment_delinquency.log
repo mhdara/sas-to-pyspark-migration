@@ -1,0 +1,57 @@
+155                                                        The SAS System                     Monday, 28 September, 2026 12:41:00 AM
+
+1195       
+1196       /*----------------------------------------------------------------------------------------------
+1197          04_payment_delinquency.sas - flag late payments and summarise each loan's repayment history.
+1198       
+1199          What it does:
+1200            1. reads the late-payment threshold (DPD_THRESHOLD = "30", stored as text) from the settings
+1201               table into the macro variable &dpd_threshold;
+1202            2. sorts the payments by loan and date and removes the duplicate (NODUPKEY keeps the first);
+1203            3. walks through each loan's payments in date order (BY loan_id): running total paid (sum
+1204               statement), highest days past due so far (RETAIN), late flag (days_past_due > threshold),
+1205               and the payment month as YYYYMM;
+1206            4. writes every payment row, and one summary row per loan (its last row).
+1207          Reads:  stg.loan_payments, ctrl.macro_parameters
+1208          Writes: out.delinquency (one row per loan and month, duplicate removed),
+1209                  out.loan_status (one row per loan: cum_paid, max_dpd)
+1210          Trap:   the threshold comes from a table, not the code; NODUPKEY keeps the FIRST copy while
+1211                  Spark's dropDuplicates keeps any copy; FIRST./LAST. and RETAIN depend on row order.
+1212       ----------------------------------------------------------------------------------------------*/
+1213       libname stg  "&root/stg";
+1214       libname ctrl "&root/ctrl";
+1215       libname out  "&root/out";
+1216       
+1217       proc sql noprint;
+1218         select param_value into :dpd_threshold trimmed
+1219         from ctrl.macro_parameters
+1220         where param_name = 'DPD_THRESHOLD';
+1221       quit;
+1222       
+1223       proc sort data=stg.loan_payments out=work.pay_sorted nodupkey;
+1224         by loan_id payment_date;
+1225       run;
+1226       
+1227       data out.delinquency out.loan_status(keep=loan_id cum_paid max_dpd);
+1228         set work.pay_sorted;
+1229         by loan_id;
+1230         length period_id $6;
+1231         retain max_dpd;
+1232         if first.loan_id then do;
+1233           cum_paid = 0;
+1234           max_dpd  = 0;
+1235         end;
+1236         cum_paid + payment_amount;                 /* sum statement: retains, treats missing as 0 */
+1237         max_dpd = max(max_dpd, days_past_due);
+1238         delinquent_flag = (days_past_due > &dpd_threshold);
+1239         period_id = put(payment_date, yymmn6.);
+1240         output out.delinquency;
+1241         if last.loan_id then output out.loan_status;
+1242       run;
+1243       
+1244       
+1245       
+1246       
+156                                                        The SAS System                     Monday, 28 September, 2026 12:41:00 AM
+
+1247       

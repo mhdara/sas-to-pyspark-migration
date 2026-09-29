@@ -1,0 +1,28 @@
+# config.yaml - one place for every setting (change here, never in code)
+llm:
+  provider: "ollama"          # ollama (local) | anthropic (remote); switch here, the code stays the same
+  temperature: 0              # Ollama only: Claude Opus 5 accepts no sampling settings
+  seed: 42                    # Ollama only
+  timeout_s: 600
+  providers:
+    ollama:
+      base_url: "http://localhost:11434/v1"   # Ollama's OpenAI-compatible API
+      api_key: "ollama"                       # ignored by Ollama, required by the client
+      model: "qwen2.5-coder:14b"              # 16 GB Mac; use qwen2.5-coder:7b with 8 GB
+    anthropic:
+      model: "claude-opus-5"                  # claude-sonnet-5 is cheaper ($2/$10 per M tokens)
+      max_tokens: 16000                       # includes the model's thinking; the answer itself is short
+      price_per_million: {input: 5.00, output: 25.00}   # USD, claude-opus-5, used for the cost column
+      api_key_env: "ANTHROPIC_API_KEY"        # read from this environment variable (.env), never stored here
+versions:
+  analyzer: "1.1"
+  rules: "1.1"                # protocol rules (classify_rules.py); v2 = classify_rules_v2.py
+  analysis_prompt: "v1"
+  conversion_prompt: "v1"
+  repair_prompt: "v1"
+tolerance:
+  numeric: 1.0e-6
+  forecast: 1.0e-6
+run:
+  sandbox_timeout_s: 300
+  max_repairs: 1

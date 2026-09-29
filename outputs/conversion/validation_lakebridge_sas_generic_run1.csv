@@ -1,0 +1,38 @@
+program_id,table,column,check,expected_value,actual_value,passed,compared,method,run
+05_card_fraud_summary,out.card_summary,,row_count,6,6,1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.card_summary,,column_count,4,4,1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.card_summary,,column_names,"['avg_amount', 'merchant_category', 'n_txn', 'total_amount']","['avg_amount', 'merchant_category', 'n_txn', 'total_amount']",1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.card_summary,merchant_category,null_count,0,0,1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.card_summary,merchant_category,max_length_chars,11,11,1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.card_summary,merchant_category,max_length_utf8_bytes,11,11,1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.card_summary,merchant_category,distinct_count,6,6,1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.card_summary,merchant_category,exact_text_values,0,0,1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.card_summary,n_txn,null_count,0,0,1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.card_summary,n_txn,sum,5000.0,5000.0,1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.card_summary,n_txn,min_max,"(np.float64(807.0), np.float64(881.0))","(np.float64(807.0), np.float64(881.0))",1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.card_summary,total_amount,null_count,0,0,1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.card_summary,total_amount,sum,604767.25,604767.25,1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.card_summary,total_amount,min_max,"(np.float64(95541.96), np.float64(106427.47))","(np.float64(95541.96), np.float64(106427.47))",1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.card_summary,avg_amount,null_count,0,0,1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.card_summary,avg_amount,sum,725.627665,725.627665,1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.card_summary,avg_amount,min_max,"(np.float64(118.245), np.float64(125.652267))","(np.float64(118.245), np.float64(125.652267))",1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.card_summary,,row_hash_sha256,0 rows only in sas,0 rows only in python,1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.fraud_freq,,row_count,12,12,1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.fraud_freq,,column_count,4,4,1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.fraud_freq,,column_names,"['count', 'fraud_flag', 'merchant_category', 'percent']","['count', 'fraud_flag', 'merchant_category', 'percent']",1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.fraud_freq,merchant_category,null_count,0,0,1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.fraud_freq,merchant_category,max_length_chars,11,11,1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.fraud_freq,merchant_category,max_length_utf8_bytes,11,11,1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.fraud_freq,merchant_category,distinct_count,6,6,1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.fraud_freq,merchant_category,exact_text_values,0,0,1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.fraud_freq,fraud_flag,null_count,0,0,1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.fraud_freq,fraud_flag,sum,6.0,6.0,1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.fraud_freq,fraud_flag,min_max,"(np.float64(0.0), np.float64(1.0))","(np.float64(0.0), np.float64(1.0))",1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.fraud_freq,count,null_count,0,0,1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.fraud_freq,count,sum,5000.0,5000.0,1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.fraud_freq,count,min_max,"(np.float64(4.0), np.float64(877.0))","(np.float64(4.0), np.float64(877.0))",1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.fraud_freq,percent,null_count,0,0,1,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.fraud_freq,percent,sum,99.99999999999999,600.0,0,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.fraud_freq,percent,min_max,"(np.float64(0.08), np.float64(17.54))","(np.float64(0.45), np.float64(99.55))",0,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,out.fraud_freq,,row_hash_sha256,12 rows only in sas,12 rows only in python,0,sas vs python,lakebridge_sas_generic,1
+05_card_fraud_summary,,,planted_refunds_and_zeros_in_totals,,total 604767.25 vs source 604767.25,1,python output,lakebridge_sas_generic,1
