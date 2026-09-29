@@ -13,6 +13,10 @@ is not in this repository.
 
 ## The data model
 
+![Power BI model view: the migration-results tables on the left, the bank data on the right, standalone tables at the bottom](model.png)
+
+*Model view in Power BI Desktop. Left: the migration results (DimProgram, DimMethod and DimTable with their result tables). Right: the bank's data (DimSegment → DimCustomer → DimLoan → FactLoanPayment, plus FactCardTransaction and DimDate). Bottom: standalone tables without relationships.*
+
 The tables are shaped for Power BI before they are loaded (one row means one clear thing in every table), so
 the dashboard only needs relationships and a few simple measures, not heavy transformations. There are two
 separate parts.
