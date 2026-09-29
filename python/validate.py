@@ -4,7 +4,7 @@ For each `out` table a SAS program writes (from the analyzer), the SAS table in 
 with the table the converted Python program wrote, using the same checks as the data migration
 (migrate_data.reconcile), after the same preparation on both sides:
   lower-case column names, numbers rounded to 6 decimals (tolerance 1e-6), rows sorted.
-Then named checks for the planted migration traps (data_specs.md) run on the Python output.
+Then named checks for the planted migration traps (docs/TECHNICAL_REPORT.md, section 5.2) run on the Python output.
 
 Run:  python python/validate.py --method llm_remote [--run 1] [program_id ...]
 Out:  outputs/conversion/validation_<method>_run<k>.csv

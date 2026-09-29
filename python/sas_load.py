@@ -25,7 +25,7 @@ TABLES = {  # SAS library -> {table: CSV it is loaded from}
 }
 VERSIONS = {"v1": "$12", "v2": "$60"}  # customer_name length per run; the last one stays in stg
 LENGTH_LINE = "%let name_len = $60;"  # the line in 00_load_raw.sas that each run replaces
-SHOWCASE_IDS = [8, 43, 44, 45]  # planted names (data_specs.md, cases 6 and 7)
+SHOWCASE_IDS = [8, 43, 44, 45]  # planted names (docs/TECHNICAL_REPORT.md, section 5.2)
 
 
 def download(sas, root, folder, table):

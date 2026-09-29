@@ -1,3 +1,13 @@
+# Copyright (2024) Databricks, Inc. (original prompt); modifications (2026) Mahdokht Dara.
+# This file is a MODIFIED version of the SAS prompt shipped with Databricks Lakebridge Switch
+# (databricks-switch-plugin 0.2.0, resources/builtin_prompts/code_to_databricks_python_notebook/sas.yml).
+# It is licensed under the Databricks License (see prompts/LICENSE-databricks.txt), not under this
+# repository's MIT license, and may only be used with the Databricks Services. This software includes
+# software developed at Databricks (https://www.databricks.com/).
+# Changes made: instructions that failed on serverless compute were removed or corrected (no notebook
+# widgets, no .cache(), row_number() instead of dropDuplicates() for NODUPKEY, PROC FREQ percentages over the
+# whole table, keep every column, %run for %include), and the SAS rules of rules/conversion_rules.md were added.
+#
 # switch_sas_custom_v1.yml - custom conversion prompt for Databricks Lakebridge Switch (run D).
 # Starts from Switch's built-in SAS prompt (code_to_databricks_python_notebook/sas.yml, Lakebridge v0.15.2) and
 # changes only what the earlier runs showed to be wrong, plus the SAS-semantics rules of rules/conversion_rules.md
