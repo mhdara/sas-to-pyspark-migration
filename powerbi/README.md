@@ -2,9 +2,12 @@
 
 The dashboard shows the results of the project in one place: how many programs each method converted, which
 checks passed, how the data migration went, and how the SAS programs and tables are connected. It is built in
-Power BI Desktop from 19 of the 20 CSV files in [`outputs/bi/`](../outputs/bi/), which
-[`python/lineage_bi.py`](../python/lineage_bi.py) produces from the project's results. The 20th file, `FactLineagePath`, is ready for a back-trace page
-but is not used in the dashboard yet. The `.pbix` file itself is not in this repository.
+Power BI Desktop from the 20 CSV files in [`outputs/bi/`](../outputs/bi/), which
+[`python/lineage_bi.py`](../python/lineage_bi.py) produces from the project's results.
+
+Source file: [`migration_dashboard.pbix`](migration_dashboard.pbix) (open with Power BI Desktop). To refresh it on
+another computer, set the `RootPath` parameter (**Transform data → Edit parameters**) to the `outputs\bi\` folder
+of your copy of this repository.
 
 ![Power BI dashboard: Migration overview page](dashboard.png)
 
@@ -36,7 +39,7 @@ DimCustomer → DimLoan → FactLoanPayment. Card transactions link to DimCustom
 transactions link to a date table (DimDate). The loan whose customer (999) does not exist shows up as
 "(Blank)", which makes that planted problem visible.
 
-A few tables are used on their own, without relationships: FactLineageEdge, FactForecast,
+A few tables are used on their own, without relationships: FactLineageEdge, FactLineagePath, FactForecast,
 ShowcaseNames and the two summary tables. All relationships are many-to-one and filter in one direction.
 
 What one row means in each result table:
@@ -52,7 +55,7 @@ What one row means in each result table:
 | FactCardTransaction | one card transaction |
 | FactForecast | one month, with SAS's forecast, Python's forecast and the difference |
 | FactLineageEdge | one connection in the lineage graph, either data (a file loaded into a table, a table read or written by a program) or code (`%include`, a macro defined or called) |
-| FactLineagePath (not loaded yet) | one result table together with one item behind it (a program, table, macro or source file) and how many steps away it is |
+| FactLineagePath | one result table together with one item behind it (a program, table, macro or source file) and how many steps away it is |
 
 ## Measures
 
@@ -86,4 +89,4 @@ names), so it measures only the real migration.
 | Data migration | the four accented showcase names as they appear in the CSV, in SAS and in Parquet, and every migration check (the three deliberately failing truncation checks are highlighted) | [view](pages/06_data_migration.png) |
 | Code conversion | the result of every program for every method, SAS's forecast against Python's, the largest forecast difference, and the number of programs each method converted | [view](pages/07_code_conversion.png) |
 | Migration risks | the share of the 7 trap checks each method passed (0% means the program never produced output to check) | [view](pages/08_migration_risks.png) |
-| Lineage | the network of data and code connections between source files, tables, programs and macros | [view](pages/09_lineage.png) |
+| Lineage | the network of data and code connections between source files, tables, programs and macros, and a back-trace: choose a result table and a list shows everything behind it (programs, tables, macros, source files), with how many steps away each item is | [view](pages/09_lineage.png) |
