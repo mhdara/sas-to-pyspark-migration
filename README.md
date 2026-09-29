@@ -5,14 +5,14 @@ the code is only half of that work. The other half is showing that the new code 
 the old code, because SAS and Spark differ in small ways that do not cause errors: they just produce
 slightly different results.
 
-This project is a case study of that problem. It contains 12 SAS programs for a fictional Québec retail bank,
-run in real SAS 9.4 (SAS OnDemand for Academics); the tables SAS produced are the "right answers". The project
-then:
+This project is a case study of that problem. I wrote 12 SAS programs for a fictional Québec retail bank,
+ran them in real SAS 9.4 (SAS OnDemand for Academics), and used the tables SAS produced as the "right
+answers". I then:
 
-- analyzes the SAS code automatically (what each program reads, writes and calls) and classifies each program,
-- converts the SAS data files to Parquet (the file format Spark and Databricks use) and checks that nothing
+- analyzed the SAS code automatically (what each program reads, writes and calls) and classified each program,
+- converted the SAS data files to Parquet (the file format Spark and Databricks use) and checked that nothing
   changed,
-- converts the SAS code to PySpark in four different ways, runs the converted code, and compares its output
+- converted the SAS code to PySpark in four different ways, ran the converted code, and compared its output
   with SAS's output, value by value.
 
 To make the comparison meaningful, the generated data contains a few deliberate traps: values where a
@@ -131,9 +131,9 @@ setup steps.
 
 ## Limitations
 
-- The SAS code and data are small (12 programs, about 32,000 rows) and were written to contain known
+- The SAS code and data are small (12 programs, about 32,000 rows) and were written by me to contain known
   problems. Real SAS code is larger and has problems nobody planned for.
-- Each conversion method ran once, so how much the AI results would vary between runs is unknown.
+- Each conversion method ran once, so I don't know how much the AI results would vary between runs.
 - Some planted traps are weaker than they look (for example, the duplicated payment is an exact copy, so it
   cannot show *which* copy was kept). The report lists these in
   [section 11](docs/TECHNICAL_REPORT.md#11-limitations-and-assumptions).
