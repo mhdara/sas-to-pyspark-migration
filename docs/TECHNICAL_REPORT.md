@@ -1,11 +1,11 @@
 # Technical report: migrating SAS to PySpark and checking the results against SAS
 
-This report explains what I built, why I built it that way, how I checked it, what the results were, and
-what I would do differently. Every number comes from a file in [`outputs/`](../outputs/), and every file can be
+This report explains what the project does, why it is built that way, how the results were checked, what
+the results were, and what could be done better. Every number comes from a file in [`outputs/`](../outputs/), and every file can be
 regenerated with the scripts in [`python/`](../python/).
 
-Where it matters, I say whether something was only built, whether an automated test covers it, or whether it
-is only proposed. Anything listed as future work was not done.
+Where it matters, the report says whether something was only built, whether an automated test covers it, or
+whether it is only proposed. Anything listed as future work was not done.
 
 ---
 
@@ -18,21 +18,21 @@ missing number as smaller than every other number, while Spark treats it as unkn
 20000` test gives a different answer for a customer with no income. Code like that runs fine and is simply
 wrong.
 
-To study this, I built a small but complete migration:
+To study this, the project builds a small but complete migration:
 
-- I wrote **12 SAS programs** for a fictional retail bank and ran them in **real SAS 9.4**. The 19 tables they
+- **12 SAS programs** were written for a fictional retail bank and run in **real SAS 9.4**. The 19 tables they
   produced are the "right answers" for everything that follows.
-- I generated the bank's data myself and planted **8 traps** in it: values where SAS and Spark disagree, or
+- The bank's data is generated, with **8 traps** planted in it: values where SAS and Spark disagree, or
   where a migration typically loses information.
-- I moved the 7 SAS data tables to Parquet and compared them with the originals using **192 checks**. Nothing
-  changed, and I showed that the checks do catch damage when it is there.
-- I rebuilt SAS's `PROC FORECAST` in Python. It matches SAS to within 0.00000000035.
-- I converted the SAS code to PySpark with **four methods**, ran the converted code, and compared its output
-  with SAS's, value by value. Claude Opus 5 (with conversion rules I wrote in the prompt) got all 11 programs
-  right; my rule-based translator got 4; a local AI model got 4; Databricks' own tool, Lakebridge, got 0 with
-  its default instructions and 5 with instructions I wrote.
+- The 7 SAS data tables were moved to Parquet and compared with the originals using **192 checks**. Nothing
+  changed, and the checks were shown to catch damage when it is there.
+- SAS's `PROC FORECAST` was rebuilt in Python. It matches SAS to within 0.00000000035.
+- The SAS code was converted to PySpark with **four methods**; the converted code was run and its output
+  compared with SAS's, value by value. Claude Opus 5 (with the project's conversion rules in the prompt) got
+  all 11 programs right; the project's rule-based translator got 4; a local AI model got 4; Databricks' own
+  tool, Lakebridge, got 0 with its default instructions and 5 with the project's instructions.
 
-The piece I consider most important is the checking itself: every converted program is run on the migrated
+The most important part is the checking itself: every converted program is run on the migrated
 data and compared, cell by cell, with the table SAS produced, plus a specific check for each trap. The
 results apply to these programs and this data; section 11 lists what they do not show.
 
@@ -52,7 +52,7 @@ Databricks.
 ### Why a wrong migration is hard to notice
 
 A wrong migration rarely crashes. It produces numbers that look plausible and differ from SAS's in a handful
-of rows. These are the kinds of differences I planted on purpose:
+of rows. These are the kinds of differences planted on purpose:
 
 | What SAS does | What a direct translation to Spark does | Result |
 |---|---|---|
@@ -62,7 +62,7 @@ of rows. These are the kinds of differences I planted on purpose:
 | A setting can be read from a table into a macro variable and pasted into the code when it runs. Table names can also be built while the program runs. | The value gets typed into the code as a constant. | The code stops following the settings table. |
 | `PROC FORECAST` uses its own starting values. | A standard forecasting library uses different ones. | Different forecasts. |
 
-### Why I used real SAS
+### Why real SAS was used
 
 Guessing what SAS would output is exactly the mistake a migration must avoid. So every expected value comes
 from SAS 9.4, run on SAS OnDemand for Academics (SAS's free cloud version) and controlled from Python with
@@ -70,7 +70,7 @@ SASPy.
 
 ---
 
-## 3. What I set out to do, and what I did
+## 3. Goals and what was done
 
 | Goal | Status |
 |---|---|
@@ -120,7 +120,7 @@ flowchart TD
 | a macro variable filled from a table (`SELECT ... INTO :var`) | a Python variable read from the table | the same |
 | `PROC FORECAST` | [`forecast.py`](../python/forecast.py) | the same module |
 
-The converted PySpark runs on Spark 4.2 on my laptop. Only the Lakebridge runs used Databricks itself
+The converted PySpark runs on Spark 4.2 on a laptop. Only the Lakebridge runs used Databricks itself
 (serverless compute and Delta tables). The pipeline is a set of Python scripts, not a scheduled production job.
 
 ### 4.3 The main design rule
@@ -135,7 +135,7 @@ those checks. SAS's output is the reference for everything.
 
 ### 5.1 The generated data
 
-I generated the bank's data with [`generate_data.py`](../python/generate_data.py), using a fixed random seed
+The bank's data is generated by [`generate_data.py`](../python/generate_data.py), using a fixed random seed
 (42) so that every run produces exactly the same files; a test checks this.
 
 | Table | Rows | How it is made |
@@ -151,7 +151,7 @@ status and fraud flag are random.
 
 ### 5.2 The planted traps
 
-For each trap I asked: what could silently go wrong, which value would trigger it, and how will I check it?
+Each trap answers three questions: what could silently go wrong, which value would trigger it, and how it is checked.
 
 | Planted value | What it tests | How it is checked |
 |---|---|---|
@@ -181,8 +181,8 @@ For each trap I asked: what could silently go wrong, which value would trigger i
 | 10_repayment_forecast | 12-month forecast of total repayments | `INTNX`, `PROC FORECAST` |
 | 11_executive_report | a summary built from the outputs of 02, 04 and 10 | depends on three other programs |
 
-When I say "12 programs" I mean all the SAS code (analysis, lineage, classification). When I say "11
-programs" I mean the ones converted to PySpark: program 00 only loads files into SAS, and its job is done by
+"12 programs" means all the SAS code (analysis, lineage, classification). "11 programs" means the ones
+converted to PySpark: program 00 only loads files into SAS, and its job is done by
 the data migration instead, which copies the tables SAS built rather than rebuilding them from the CSV files.
 
 ---
@@ -200,7 +200,7 @@ it can tell a call to one of *our* macros apart from SAS's own macro statements 
 Some table names cannot be read directly:
 - When a table is passed to a macro as an argument, the analyzer records it with medium confidence.
 - When a name contains a macro variable (`out.period_summary_&pid`), it cannot know the real name. For
-  program 08, I asked SAS to write out the code it actually ran after expanding the macros (the **MPRINT**
+  program 08, SAS was asked to write out the code it actually ran after expanding the macros (the **MPRINT**
   log); the analyzer reads that log and finds the four real table names.
 
 What it produces: an inventory of the 12 programs (lines of code, procedures, macros, joins and so on), a list
@@ -264,12 +264,12 @@ from 1 for the starting line; counting from 1 matches SAS on this data.
 |---|---|
 | Rule-based translator, [`convert_rules.py`](../python/convert_rules.py) | Fixed templates for the SAS features it knows (DATA step, PROC SQL, `SORT NODUPKEY`, `MEANS`, `FREQ`, `FORMAT`). For anything else it answers "not supported" and says why. |
 | AI models, [`convert.py`](../python/convert.py) | One prompt per program containing: the analyzer's facts (input and output tables, macros), where each library's tables are, only the rules from [`rules/conversion_rules.md`](../rules/conversion_rules.md) that apply to this program, and the SAS code ([`prompts/`](../prompts/) has the templates). The answer is checked before running (does it compile, does it mention every table), then run in a separate process with a 5-minute limit, then compared with SAS. If it fails, the model gets **one repair attempt**: the same prompt plus the error message or the first 15 differences. |
-| Databricks Lakebridge, [`lakebridge_run.py`](../python/lakebridge_run.py) | Lakebridge's converter (called Switch) runs inside Databricks and writes one notebook per program. My script downloads each notebook unchanged, runs it on Databricks, reads the resulting tables back, and compares them with SAS in the same way. |
+| Databricks Lakebridge, [`lakebridge_run.py`](../python/lakebridge_run.py) | Lakebridge's converter (called Switch) runs inside Databricks and writes one notebook per program. The script downloads each notebook unchanged, runs it on Databricks, reads the resulting tables back, and compares them with SAS in the same way. |
 
 Claude Opus 5 (through Anthropic's API) and qwen2.5-coder 14B (a local model run with Ollama, set to be as
 repeatable as possible: temperature 0, fixed seed) went through exactly the same process. Each converted
 program reads the tables written by the same method's earlier programs, just as in SAS, so a mistake early on
-affects the programs after it. I never edited the generated code by hand.
+affects the programs after it. The generated code was never edited by hand.
 
 ---
 
@@ -277,8 +277,8 @@ affects the programs after it. I never edited the generated code by hand.
 
 ### 7.1 Checking the data after the move to Parquet
 
-The question is simple: after copying a SAS table to Parquet, is every value still there and unchanged? I
-compare the two copies at several levels, from rough to exact:
+The question is simple: after copying a SAS table to Parquet, is every value still there and unchanged? The
+two copies are compared at several levels, from rough to exact:
 
 | Level | What is compared | What it would catch | Example from the customers table (SAS = Parquet) |
 |---|---|---|---|
@@ -294,14 +294,14 @@ compare the two copies at several levels, from rough to exact:
 numbers with 9 decimals, dates as text and empty values as `<NULL>`. Customer 8, for example, becomes
 `35392.000000000|Saint-Jérôme|8.000000000|Marie-Ève Beauchemin-Laflamme|2018-07-23 00:00:00|qc|RETAIL`. That
 line goes through SHA-256, which turns it into a 64-character code; changing a single character gives a
-completely different code. I then sort the codes of both tables and require the two lists to be identical. That
+completely different code. The codes of both tables are then sorted, and the two lists must be identical. That
 way a lost row, an extra row or a duplicated row is caught too, not only a changed one.
 
 **In total: 192 checks** (163 comparing SAS and Parquet across the 7 tables, 28 comparing the CSV files with
 SAS, and the deliberate failure). All passed; the details are in
 [`outputs/reconciliation_results.csv`](../outputs/reconciliation_results.csv).
 
-**Do the checks catch real damage?** To find out, I loaded the customer names into SAS a second time with the
+**Do the checks catch real damage?** To find out, the customer names were loaded into SAS a second time with the
 name column set to 12 bytes instead of 60, and ran three more checks against that version. They are meant to
 fail, and they do: the longest name drops from 29 to 12 characters, 444 of the 500 names are different, and 12
 names are cut in the middle of an accented letter, leaving invalid text. SAS gave no error or warning when this
@@ -333,14 +333,14 @@ correct only if every program that uses its macros is correct.
 - There are **47 automated tests** in [`tests/`](../tests/). They cover the traps in the generated data and
   that the data is the same on every run; the analyzer's findings against what SAS really produced; the
   classification rules on small SAS snippets; the data migration results; the forecast; and the validator.
-- I tested the validator by feeding it deliberately wrong versions of a correct result: missing incomes put in
+- The validator was tested by feeding it deliberately wrong versions of a correct result: missing incomes put in
   `HIGH`, provinces left in lower case, a row removed. Each one fails. One lesson from this: the realistic
   mistake (missing incomes in the wrong band) still passes the row counts, the empty-value counts, the sums and
   the number of different values. Only the value-by-value and fingerprint checks catch it.
-- During the first full run, my own checking code had three bugs, and each one made correct code fail: it
+- During the first full run, the checking code itself had three bugs, and each one made correct code fail: it
   expected table names built at run time to appear literally in the code; Spark's worker processes started
-  with a different Python version; and it picked up table names from comments. I fixed them and reran the
-  affected conversions from scratch.
+  with a different Python version; and it picked up table names from comments. They were fixed and the
+  affected conversions were rerun from scratch.
 
 ---
 
@@ -362,7 +362,7 @@ This was checked for this one data series and these settings.
 ✅ means every check passed. ❌ shows the main reason for failing. "Via 07, 08" means program 06 is judged by the
 programs that use it; "Earlier program failed" means its input table was never written.
 
-| Program | Claude | Rule-based | qwen (local) | Lakebridge, default instructions | Lakebridge, my instructions |
+| Program | Claude | Rule-based | qwen (local) | Lakebridge, default instructions | Lakebridge, project instructions |
 |---|---|---|---|---|---|
 | 01 customer clean | ✅ | ✅ | ✅ | ❌ asks for a parameter | ✅ |
 | 02 loan enrichment | ✅ | ✅ | ✅ | ❌ earlier program failed | ✅ |
@@ -384,7 +384,7 @@ What each method was given, and how to read its result:
   crashed on simple mistakes (07 wrote its output to a doubled path; 08 sorted by an empty list of columns),
   and Claude fixed both when shown the error. Across all programs, 413 of 413 checks passed. It took 13 model
   calls, about 5 minutes and $0.88. Two things helped it a lot: the rules in the prompt spelled out the SAS
-  behaviour behind each trap, and for program 10 the prompt tells it to use my forecast module rather than
+  behaviour behind each trap, and for program 10 the prompt tells it to use the project's forecast module rather than
   write the algorithm itself. Each SAS file also starts with a comment that describes what it does. So the
   result shows what Claude achieved with this help, not what it would do on unfamiliar code.
 - **Rule-based translator (4 of 11).** It had only its own templates. The four programs it converted passed
@@ -403,8 +403,9 @@ What each method was given, and how to read its result:
   supplies when the notebook runs, and to cache tables with `.cache()`, which serverless compute does not
   allow. Most notebooks stopped for those two reasons. The same instructions also tell the model to remove
   duplicates with `dropDuplicates()`, which this data cannot catch (section 11).
-- **Lakebridge with my instructions (5 of 11).** Same model, same compute. I started from Lakebridge's own SAS
-  instructions, removed the parts that caused the crashes, and added my conversion rules
+- **Lakebridge with the project's instructions (5 of 11).** Same model, same compute. The instructions start
+  from Lakebridge's own SAS instructions, remove the parts that caused the crashes, and add the project's
+  conversion rules
   ([`prompts/switch_sas_custom_v1.yml`](../prompts/switch_sas_custom_v1.yml)). It went from 0 to 5. Most of the
   remaining failures come from converting each file on its own: the macro library and the programs that use it
   were converted separately and did not agree on names and outputs.
@@ -422,30 +423,30 @@ Share of programs where the method's label matched the answer key (12 programs):
 | Claude Opus 5 | 75% | 75% | 42% |
 | qwen2.5-coder 14B | 50% | 75% | 25% |
 
-I would not use these numbers to say which method is better, for four reasons. The answer key and the rules
-were designed together, so they naturally agree. I adjusted the rules while looking at 3 of the 12 programs.
+These numbers do not show which method is better, for four reasons. The answer key and the rules
+were designed together, so they naturally agree. The rules were adjusted while looking at 3 of the 12 programs.
 One rule simply checks whether the file name contains "report". And with only 12 programs, a single program
 changes a percentage by more than 8 points. A fair comparison would need programs nobody wrote for this
 project, labelled by someone who has not seen the rules.
 
-### 8.5 Why the AI methods did not all reach 11, and what I would change
+### 8.5 Why the AI methods did not all reach 11, and what to change
 
 Only one setup converted all 11 programs, and it had help. The case asked for a **local** solution, and the
-local model reached 4. Databricks' tool reached 0 with its default instructions and 5 with mine. Looking at the
+local model reached 4. Databricks' tool reached 0 with its default instructions and 5 with the project's. Looking at the
 failures, these are the causes:
 
-| Cause | What I saw | Where |
+| Cause | What was observed | Where |
 |---|---|---|
 | The local model is less capable | With the same prompts, rules and repair attempt, qwen made basic mistakes that Claude did not (a reserved word as an argument name, wrong paths despite a rule, a table built without column types). | qwen: 03, 07, 08, 09, 10 |
 | Error feedback was ignored | In 4 of 7 repairs, qwen's second answer was exactly as long as its first. | qwen |
 | Each file is converted on its own | The macro library (06) and the programs that use it (07, 08) are converted separately, so each has to guess how the other names things. Lakebridge's 08 passed an argument that its 06 didn't define, and its 06 left out two columns that 07 needed. Even Claude's working 08 contains extra code that checks, while running, which argument names 06 accepts, and tries three different output paths. It works, but only because Claude wrote defensively. | Lakebridge 07, 08; a hidden risk in Claude's 08 |
 | The tool's defaults don't fit SAS | Lakebridge's default instructions asked for notebook parameters and `.cache()`. Its default text preprocessing also treated `--` as the start of a SQL comment, and SAS comment banners made of dashes caused it to delete most of the code before the model saw it. | Lakebridge with default instructions |
-| Only one repair | Two of Claude's programs needed their repair. I allowed only one, to keep the comparison fair. | all AI methods |
+| Only one repair | Two of Claude's programs needed their repair. Only one was allowed, to keep the comparison fair. | all AI methods |
 | One failure causes more | Each program reads the output of earlier programs from the same method, so one failure takes others down with it. | qwen 06, 11; Lakebridge 02, 06, 11 |
 | Small output details | A helper column left in the output; percentages calculated within each group instead of over the whole table. | Lakebridge 04, 05 |
-| The rules did a lot of the work | My SAS rules and the forecast module carried knowledge the models might not have had. How much the results depend on them was not measured. | all AI methods |
+| The rules did a lot of the work | The project's SAS rules and the forecast module carried knowledge the models might not have had. How much the results depend on them was not measured. | all AI methods |
 
-**What I would try next**, starting with what I expect to help most:
+**What to try next**, starting with what should help most:
 
 1. **Convert in dependency order and pass the interfaces along.** Convert program 06 first, extract the names
    of its functions, their arguments and the columns they produce, and put that into the prompts for 07 and 08.
@@ -493,7 +494,7 @@ data and wrote 500 rows, which were compared with SAS's table: 41 checks, all pa
 band column has 0 different values, the missing-income flag adds up to 15 on both sides, and the row
 fingerprints are identical. The trap check confirmed that the 15 customers without income are `LOW`.
 
-To see what a mistake looks like, I took the same result and put those 15 customers in `HIGH`, which is what a
+To see what a mistake looks like, the same result was changed to put those 15 customers in `HIGH`, which is what a
 translation without `isNull()` would do. Three checks fail: the value-by-value comparison of the band column,
 the row fingerprints, and the trap check.
 
@@ -565,17 +566,17 @@ became a Python value read from the table and converted from text to a number, r
 
 ---
 
-## 10. Problems I ran into
+## 10. Problems encountered
 
-| Problem | What happened | What I did |
+| Problem | What happened | What was done |
 |---|---|---|
-| SAS counts text length in bytes | My first load declared the name column as 12 bytes. SAS cut 444 of the 500 names without any warning, some in the middle of an accented letter, which left text that isn't even valid UTF-8. | I set the length from the longest name measured in bytes (60), added checks that compare the source file with SAS, and kept the broken load as proof that the checks catch it. |
+| SAS counts text length in bytes | The first load declared the name column as 12 bytes. SAS cut 444 of the 500 names without any warning, some in the middle of an accented letter, which left text that isn't even valid UTF-8. | The length was set from the longest name measured in bytes (60), checks were added that compare the source file with SAS, and the broken load was kept as proof that the checks catch it. |
 | Missing values | SAS and Spark disagree on comparisons, formats, sums and group counts involving missing values. | Explicit rules in the conversion prompt, and trap checks where the data contains missing values. |
 | Table names built while running | Program 08 creates its table names from the month. | SAS's MPRINT log (the code SAS actually ran) gives the real names, for lineage and for checking. |
 | No Spark equivalent | `PROC FORMAT` and `PROC FORECAST` have no direct replacement. | The format became a chain of conditions; the forecast was rebuilt and matched to SAS. |
-| My own checks had bugs | Three bugs made correct code fail (section 7.3). | Fixed them, added tests that feed the validator deliberately wrong results, reran. |
+| The checking code had bugs | Three bugs made correct code fail (section 7.3). | Fixed them, added tests that feed the validator deliberately wrong results, reran. |
 | Setting up Lakebridge | The Databricks command-line tool and Lakebridge conflicted over how to log in; catalogs could only be created in the web interface; permissions had to be granted by name; the default text preprocessing deleted most of the SAS code. | Worked around each one; set the source format to "generic" for SAS files. |
-| Databricks serverless limits | `.cache()` is not allowed, and notebooks waited in a queue for between 40 seconds and 27 minutes. | My instructions for Lakebridge forbid caching. |
+| Databricks serverless limits | `.cache()` is not allowed, and notebooks waited in a queue for between 40 seconds and 27 minutes. | The project's instructions for Lakebridge forbid caching. |
 
 ---
 
@@ -583,16 +584,16 @@ became a Python value read from the table and converted from text to a number, r
 
 | Limitation | Why it matters |
 |---|---|
-| The data and code are small (12 programs, about 32,000 rows) and I wrote them to contain known problems. | Real SAS code is larger and has problems nobody planned. There is no evidence here about performance. |
-| Each conversion method ran once. | I don't know how much the AI results vary from run to run. Claude Opus 5 doesn't allow setting the temperature, so its answers can differ. |
+| The data and code are small (12 programs, about 32,000 rows) and were written to contain known problems. | Real SAS code is larger and has problems nobody planned. There is no evidence here about performance. |
+| Each conversion method ran once. | How much the AI results vary from run to run is unknown. Claude Opus 5 doesn't allow setting the temperature, so its answers can differ. |
 | The duplicate payment is an exact copy. | The check can confirm the duplicate was removed, but not that the *first* copy was kept, which is SAS's rule. `dropDuplicates()` would also pass. |
-| The settings table holds 30, the same value a programmer would type in. | The checks cannot tell whether the converted code reads the setting or has 30 written in it. I checked Claude's code by reading it: it reads the setting. |
+| The settings table holds 30, the same value a programmer would type in. | The checks cannot tell whether the converted code reads the setting or has 30 written in it. Reading Claude's code shows that it does read the setting. |
 | Some missing-value cases never occur in the data (there are no missing payment amounts, days late or group values). | The rules for those cases are in the code but not tested. |
 | Both sides of the data comparison are read with the same library (`pyreadstat`). | A reading error would affect both sides equally and go unnoticed. The only independent evidence is that the converted programs reproduce totals that SAS computed itself. |
 | Numbers are rounded to 6 decimals and then compared exactly; types, column order and row order are not compared. | A value right on a rounding boundary could make correct code fail, and a change of type could go unnoticed. |
 | SAS's labels, formats and lengths are saved but not checked. | If they were lost, nothing would flag it. |
 | The forecast was matched for one data series and one set of settings, without confidence limits. | Other settings are not verified. |
-| The prompts contain rules written for these specific traps, and each SAS file starts with a descriptive comment. | The AI results partly measure my setup, not only the model. |
+| The prompts contain rules written for these specific traps, and each SAS file starts with a descriptive comment. | The AI results partly measure the project's setup, not only the model. |
 | The classification answer key was not written independently. | Section 8.4. |
 | The automatic lineage works at table level, and database libraries are not recognised. | Tracing which columns feed a number, or finding database sources, would need more work. |
 
@@ -601,7 +602,7 @@ should read. A difference smaller than the 6th decimal place does not matter to 
 
 ---
 
-## 12. What I would do better with more time
+## 12. What could be done better with more time
 
 In order of value:
 
@@ -614,7 +615,7 @@ In order of value:
 3. **Comparison rules per column.** Exact for keys, counts, dates and text; an agreed number of decimals for
    money; a small tolerance for model outputs; and a check on column types.
 4. **Repeat the AI runs, and remove the help.** Run each method several times, and also without the rules and
-   without the file comments, to see how much of the result comes from the model and how much from my setup.
+   without the file comments, to see how much of the result comes from the model and how much from the project's setup.
 5. **Score each program on its own**, with SAS's input tables, so an early failure doesn't hide how good the
    later conversions are.
 6. **A fair classification test**, on programs not written for this project, labelled by someone else.
@@ -625,7 +626,7 @@ In order of value:
 
 ## 13. What a production migration would need
 
-None of this is built here; it is what I would expect to add in a real project.
+None of this is built here; it is what a real project would add.
 
 | Area | What would be needed |
 |---|---|
@@ -647,7 +648,7 @@ None of this is built here; it is what I would expect to add in a real project.
 | Everything except SAS and the AI models (uses the saved SAS and model outputs) | Python 3.12 and Java 17 | `python python/run_all.py` (about 30 seconds, including the 47 tests) |
 | SAS | A SAS OnDemand for Academics account. SASPy, plus three encryption files from SAS placed in SASPy's `java/iomclient` folder (SAS provides them, they cannot be redistributed). The password in `~/.authinfo`, and your region in [`sas/sascfg_personal.py`](../sas/sascfg_personal.py). | `python python/run_all.py --with-sas` |
 | The AI models | Ollama with `qwen2.5-coder:14b`, and an Anthropic API key in a `.env` file (never committed) | `python python/run_all.py --with-llm` (Claude costs about $1; the local model takes several hours) |
-| Lakebridge | A Databricks workspace with Lakebridge installed, the source tables loaded as Delta tables in `workspace.stg` and `workspace.ctrl` (I did this once by hand; it is not scripted), and a Databricks CLI profile | Lakebridge's `llm-transpile` command, then `python python/lakebridge_run.py --ws-folder <folder> --method <name>` |
+| Lakebridge | A Databricks workspace with Lakebridge installed, the source tables loaded as Delta tables in `workspace.stg` and `workspace.ctrl` (done once by hand; not scripted), and a Databricks CLI profile | Lakebridge's `llm-transpile` command, then `python python/lakebridge_run.py --ws-folder <folder> --method <name>` |
 
 Versions: SAS 9.4 M8 (UTF-8 session), Python 3.12, PySpark 4.2, Java 17, SASPy 5.109, Ollama 0.34, Lakebridge
 0.15.2. The exact Python packages are in [`requirements.lock.txt`](../requirements.lock.txt). Rerunning from a
@@ -655,7 +656,7 @@ fresh clone produced every result file byte for byte, apart from the columns tha
 
 ---
 
-## 15. What I learned
+## 15. Lessons
 
 The translation turned out to be the easier half. What made the results trustworthy was comparing every output
 with SAS's own tables, and that comparison needed as much design as the conversion.
@@ -668,7 +669,7 @@ A check that has never failed is not worth much. The deliberate encoding failure
 intentionally wrong results fed to the validator are what give "no difference found" its meaning.
 
 The instructions given to an AI model matter as much as the model. The same Lakebridge model went from 0 to 5
-programs with better instructions, and Claude's 11 depended on the rules I wrote. The rule-based translator
+programs with better instructions, and Claude's 11 depended on the project's rules. The rule-based translator
 still earned its place: it converts less, but it refuses rather than guesses.
 
 ---
@@ -676,13 +677,13 @@ still earned its place: it converts less, but it refuses rather than guesses.
 ## Appendix A: the case requirements and where they are covered
 
 The written case asked for a pipeline that analyzes and converts scripts from one language (A) to another (B).
-I chose SAS for A and PySpark for B. The interviewers added further requirements, listed in the second table.
+Here A is SAS and B is PySpark. The interviewers added further requirements, listed in the second table.
 
 **Written case**
 
 | Requirement | Status | Where |
 |---|---|---|
-| Run locally, with a local AI model or open-source tools | The analyzer, rules, data migration, checks and the qwen2.5-coder 14B model all run locally. I added Claude (through an API) and Lakebridge (on Databricks) as comparisons. | [`python/`](../python/), [`python/config.yaml`](../python/config.yaml) |
+| Run locally, with a local AI model or open-source tools | The analyzer, rules, data migration, checks and the qwen2.5-coder 14B model all run locally. Claude (through an API) and Lakebridge (on Databricks) were added as comparisons. | [`python/`](../python/), [`python/config.yaml`](../python/config.yaml) |
 | 1. Read and parse the scripts from a folder | Built and tested | [`analyzer.py`](../python/analyzer.py) reads `sas/programs/` |
 | 2. Use an AI model to extract the business category, technical category, complexity and a description | Built, with the local and the remote model, using a fixed JSON format | [`analyze_llm.py`](../python/analyze_llm.py), [`prompts/analysis_prompt_v1.md`](../prompts/analysis_prompt_v1.md), results in [`outputs/`](../outputs/) (`llm_analysis_*.csv`) |
 | 3. Do the same with fixed rules, and compare with the AI model | Built: accuracy, agreement between methods and Cohen's kappa (agreement corrected for chance). The comparison is only indicative (section 8.4). | [`rules/classification_rules_v1.yaml`](../rules/classification_rules_v1.yaml), [`compare.py`](../python/compare.py), [`outputs/comparison_summary.csv`](../outputs/comparison_summary.csv), [`outputs/method_agreement.csv`](../outputs/method_agreement.csv) |
@@ -695,7 +696,7 @@ I chose SAS for A and PySpark for B. The interviewers added further requirements
 |---|---|---|
 | Assess each script before converting it: tables it creates, inputs, outputs | Built and tested | [`outputs/migration_inventory.csv`](../outputs/migration_inventory.csv), [`outputs/program_dependencies.csv`](../outputs/program_dependencies.csv) |
 | Detect the source databases (`LIBNAME`) | **Partly.** Libraries that point to folders are recorded and mapped to the new platform ([`library_mappings.yaml`](../python/library_mappings.yaml)); SQL sent directly to a database is flagged. Libraries that connect to a database are not detected. | section 6.1 |
-| Convert with AI calls, using my own prompts and SAS-to-PySpark rules; no agent | Built: one call per program plus one repair | [`prompts/`](../prompts/), [`rules/conversion_rules.md`](../rules/conversion_rules.md) |
+| Convert with AI calls, using purpose-written prompts and SAS-to-PySpark rules; no agent | Built: one call per program plus one repair | [`prompts/`](../prompts/), [`rules/conversion_rules.md`](../rules/conversion_rules.md) |
 | A CSV with a business description, technical description and category for each script | Built | [`outputs/llm_analysis_claude_opus_5.csv`](../outputs/llm_analysis_claude_opus_5.csv), [`outputs/llm_analysis_qwen2.5_coder_14b.csv`](../outputs/llm_analysis_qwen2.5_coder_14b.csv) |
 | SAS code beyond simple ETL: macros, nested macros, macro variables read from a table, with before and after | Built and shown | programs 04, 06, 07, 08 and 11; section 9.2 |
 | `.sas7bdat` to Parquet with a reconciliation test, covering cut-off text and French accents, aiming for zero data loss | Built and tested: no loss **found** in 192 checks, and cut-off text and a wrong encoding are shown to be caught | sections 6.3 and 7.1 |
@@ -708,17 +709,17 @@ I chose SAS for A and PySpark for B. The interviewers added further requirements
 
 ## Appendix B: design decisions
 
-**Why generated data.** I considered SAS's built-in sample tables (SASHELP), public mortgage data, the New York
-taxi data and the Czech "Berka" banking dataset. None of them contains all the traps I needed (missing values
+**Why generated data.** The candidates were SAS's built-in sample tables (SASHELP), public mortgage data, the New York
+taxi data and the Czech "Berka" banking dataset. None of them contains all the traps needed (missing values
 where a rule uses them, a loan without a customer, an exact duplicate, long accented names, settings stored as
 text), and several cover only one business area, which would make the business classification meaningless.
-Generating the data gave me several business areas (customers, loans, payments, cards, reporting), a monthly
+Generating the data gives several business areas (customers, loans, payments, cards, reporting), a monthly
 series for the forecast, settings tables that drive the macros, French names, a known right answer for every
 trap, and no licensing questions. The cost is realism (section 11).
 
 **Why qwen2.5-coder 14B as the local model.** It is trained for code and runs on a 16 GB laptop through Ollama.
-I set it to be as repeatable as possible (temperature 0, fixed seed) with a 32,000-token context; my prompts
-stayed under 3,000 tokens. My original plan named the 7B version of the same model; I used the 14B version.
+It is set to be as repeatable as possible (temperature 0, fixed seed) with a 32,000-token context; the prompts
+stayed under 3,000 tokens. The original plan named the 7B version of the same model; the 14B version was used.
 
 **How the prompts are structured.** Classifying and converting use separate prompts. The classification prompt
 gives the analyzer's facts (marked as reliable), the code and the allowed labels, and a JSON format rules out
@@ -731,7 +732,7 @@ so matching SAS exactly is realistic. SAS's default method picks its own model s
 would be much harder to reproduce.
 
 **Why `pyreadstat` for the SAS files.** It reads `.sas7bdat` files without SAS, uses the encoding stored in the
-file, and returns SAS's metadata; I then write Parquet with an explicit schema. Section 12 explains how an
+file, and returns SAS's metadata; Parquet is then written with an explicit schema. Section 12 explains how an
 independent check computed by SAS would make this stronger.
 
 **Lineage in Power BI.** All connections are in one table (`FactLineageEdge`), shown as a network graph that can
@@ -739,20 +740,20 @@ be filtered by kind of connection. A second table (`FactLineagePath`) lists ever
 so a page can show the sources of any table you pick. The rest of the model is described in
 [powerbi/](../powerbi/).
 
-**What changed from my first plan.**
+**What changed from the first plan.**
 - The local model became the 14B version instead of 7B.
-- I allowed one repair instead of three, to keep the comparison between methods fixed.
-- I compared rows with fingerprints instead of matching them on a key, because that works for every table
+- One repair is allowed instead of three, to keep the comparison between methods fixed.
+- Rows are compared with fingerprints instead of being matched on a key, because that works for every table
   without choosing a key, and duplicated rows still count.
-- I read the SAS files with `pyreadstat`.
-- I added Claude and Lakebridge as extra methods to compare against.
+- The SAS files are read with `pyreadstat`.
+- Claude and Lakebridge were added as extra methods to compare against.
 
-**Risks I expected, and what happened.**
+**Expected risks, and what happened.**
 
-| Risk | What I did | What happened |
+| Risk | What was done | What happened |
 |---|---|---|
 | Connecting to SAS OnDemand from Python | Used SASPy with the encryption files SAS requires | Worked once the files were installed |
 | The local model being too slow or too weak | Kept the rule-based method as a baseline, added a remote model to compare | 5.4 hours for 4 of 11 programs |
-| My checks rejecting correct code | Tested the validator with wrong results, fixed bugs, reran | Three bugs found and fixed |
+| The checks rejecting correct code | Tested the validator with wrong results, fixed bugs, reran | Three bugs found and fixed |
 | Not being able to match the forecast | Chose the SAS method that is fully documented | Matched to within 0.00000000035 |
 | Text encoding and cut-off text | Byte-length checks and a deliberately broken load | Cut-off text was caught |
