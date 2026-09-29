@@ -1,86 +1,75 @@
-# Technical report: migrating SAS to PySpark and checking the results against SAS
+# Technical report: SAS → PySpark migration with automated equivalence checks
 
-This report explains what I built, why I built it that way, how I checked it, what the results were, and
-what I would do differently. Every number comes from a file in [`outputs/`](../outputs/), and every file can be
-regenerated with the scripts in [`python/`](../python/).
+Every number in this report comes from a file in [`outputs/`](../outputs/) and can be regenerated with the
+scripts in [`python/`](../python/). Status words are used strictly:
 
-Where it matters, I say whether something was only built, whether an automated test covers it, or whether it
-is only proposed. Anything listed as future work was not done.
-
----
-
-## 1. Summary
-
-Many banks run their analytics in SAS and are moving to Spark platforms such as Databricks. Translating the
-code is not the difficult part. The difficult part is being sure the new code produces the same numbers,
-because SAS and Spark behave differently in ways that do not produce any error. For example, SAS treats a
-missing number as smaller than every other number, while Spark treats it as unknown, so the same `if income <
-20000` test gives a different answer for a customer with no income. Code like that runs fine and is simply
-wrong.
-
-To study this, I built a small but complete migration:
-
-- I wrote **12 SAS programs** for a fictional retail bank and ran them in **real SAS 9.4**. The 19 tables they
-  produced are the "right answers" for everything that follows.
-- I generated the bank's data myself and planted **8 traps** in it: values where SAS and Spark disagree, or
-  where a migration typically loses information.
-- I moved the 7 SAS data tables to Parquet and compared them with the originals using **192 checks**. Nothing
-  changed, and I showed that the checks do catch damage when it is there.
-- I rebuilt SAS's `PROC FORECAST` in Python. It matches SAS to within 0.00000000035.
-- I converted the SAS code to PySpark with **four methods**, ran the converted code, and compared its output
-  with SAS's, value by value. Claude Opus 5 (with conversion rules I wrote in the prompt) got all 11 programs
-  right; my rule-based translator got 4; a local AI model got 4; Databricks' own tool, Lakebridge, got 0 with
-  its default instructions and 5 with instructions I wrote.
-
-The piece I consider most important is the checking itself: every converted program is run on the migrated
-data and compared, cell by cell, with the table SAS produced, plus a specific check for each trap. The
-results apply to these programs and this data; section 11 lists what they do not show.
-
----
-
-## 2. The problem
-
-### The situation
-
-A retail bank runs its lending, card and reporting analytics as SAS programs. Besides ordinary data steps and
-SQL, these programs use statistical procedures and SAS **macros**. A macro is a reusable block of SAS code with
-parameters, similar to a function, but it works by generating SAS code as text before the program runs. The
-bank also keeps settings in tables rather than in the code, for example the number of days after which a
-payment counts as late, or which reporting months are active. The bank wants to move all of this to
-Databricks.
-
-### Why a wrong migration is hard to notice
-
-A wrong migration rarely crashes. It produces numbers that look plausible and differ from SAS's in a handful
-of rows. These are the kinds of differences I planted on purpose:
-
-| What SAS does | What a direct translation to Spark does | Result |
-|---|---|---|
-| A missing number counts as smaller than any number, so `if income < 20000` is true when the income is missing. | In Spark, comparing a missing value (null) gives "unknown", which counts as false. | Customers with no income end up in the wrong income band. |
-| `PROC SORT NODUPKEY` removes duplicate rows and always keeps the **first** one. | The usual Spark function, `dropDuplicates()`, keeps whichever copy it finds first, which can vary. | Results can change from run to run. |
-| Text columns have a fixed length in **bytes**. In UTF-8, an accented letter such as `é` takes two bytes. | Spark text has no length limit. | A SAS column that is too short silently cuts names, sometimes in the middle of a letter. |
-| A setting can be read from a table into a macro variable and pasted into the code when it runs. Table names can also be built while the program runs. | The value gets typed into the code as a constant. | The code stops following the settings table. |
-| `PROC FORECAST` uses its own starting values. | A standard forecasting library uses different ones. | Different forecasts. |
-
-### Why I used real SAS
-
-Guessing what SAS would output is exactly the mistake a migration must avoid. So every expected value comes
-from SAS 9.4, run on SAS OnDemand for Academics (SAS's free cloud version) and controlled from Python with
-SASPy.
-
----
-
-## 3. What I set out to do, and what I did
-
-| Goal | Status |
+| Word | Meaning |
 |---|---|
-| Analyze the SAS code automatically: what each program reads and writes, its macros, `%include`s, and the lineage between programs | Built and covered by tests |
-| Classify each program (business area, technical type, complexity), once with fixed rules and once with an AI model, and compare the two | Built; the comparison is only indicative (section 8.4) |
-| Move the SAS data to Parquet and prove nothing was lost, including accented text and cut-off text | Built, tested, and shown on this data |
-| Rebuild `PROC FORECAST` in Python | Built, tested, and shown for the configuration used |
-| Convert the SAS code to PySpark with several methods and compare each with SAS | Built and shown on this data |
-| Power BI data model and dashboard | The tables are built (`outputs/bi/`); the dashboard is built by hand, see [powerbi/](../powerbi/) |
-| Production concerns: scheduling, monitoring, CI | Not done; section 13 describes what would be needed |
+| **Implemented** | the code exists in this repository |
+| **Tested** | covered by an automated test in [`tests/`](../tests/) or by the validator |
+| **Demonstrated** | shown by a committed result, on this project's data |
+| **Future work** | proposed, not done |
+
+---
+
+## 1. Executive summary
+
+Banks are moving analytics from SAS to Spark platforms such as Databricks. The hard part is not translating
+the code: it is showing that the new system produces the same numbers, because many SAS behaviours differ
+from Spark's in ways that do not raise errors (missing values, duplicate handling, row-order logic, byte-length
+text, macro-generated code).
+
+This project builds a small but complete migration pipeline and measures it against SAS itself:
+
+- A synthetic SAS estate (12 programs, 7 source tables, 8 planted edge cases) was run in **real SAS 9.4**;
+  its 19 output tables are the expected results.
+- The SAS tables were migrated to Parquet and reconciled: **no difference across 192 checks**, and the checks
+  were shown to catch a wrong encoding and a truncated load.
+- `PROC FORECAST` was reimplemented in Python and matches SAS **within 3.5e-10** on this configuration.
+- Four code-conversion approaches were compared under the same validator. **Claude Opus 5 with the project's
+  conversion rules validated 11 of 11 programs**; a rule-based translator 4 (refusing the rest); a local
+  14B model 4; Databricks Lakebridge 0 with its built-in prompt and 5 with a custom prompt.
+
+The main engineering contribution is the **validation harness**: every converted program is run on the
+migrated data and compared cell by cell with SAS's output, plus named checks for each planted edge case.
+The results are benchmark results under defined test conditions, not proof of equivalence for every input
+(section 11).
+
+---
+
+## 2. Problem and context
+
+**The situation modelled.** A retail bank runs its lending, card and reporting analytics as SAS programs:
+DATA steps, SQL, statistical procedures and a macro layer, with settings (thresholds, active reporting
+periods) stored in control tables. The bank wants to move to Databricks.
+
+**Why it is risky.** A migration that is wrong usually does not crash. It produces plausible numbers that
+differ from SAS's in a few rows. Examples that this project plants on purpose:
+
+| SAS behaviour | What a literal Spark translation does | Consequence |
+|---|---|---|
+| a missing number is smaller than every number (`if income < 20000` is true for missing) | `null < 20000` is not true | customers without income land in the wrong band |
+| `PROC SORT NODUPKEY` keeps the first row of each key | `dropDuplicates()` keeps an arbitrary row | results can change between runs |
+| text lengths are in **bytes** (`é` = 2 bytes in UTF-8) | Spark strings have no length | a too-short SAS column silently cuts names, sometimes inside a character |
+| macro variables are text pasted into code at run time; table names can be built at run time | hard-coded values and table names | the code stops following the settings tables |
+| `PROC FORECAST` has its own initialization | a library ETS model | different forecasts |
+
+**Why real SAS was used.** Guessing what SAS would output is exactly the mistake a migration must avoid, so
+every expected value was produced by SAS 9.4 (SAS OnDemand for Academics, driven from Python with SASPy).
+
+---
+
+## 3. Objectives and scope
+
+| Objective | Status |
+|---|---|
+| Analyze SAS code: inputs, outputs, macros, `%INCLUDE`, dynamic table names, lineage | Implemented, tested |
+| Classify programs (business area, technical type, complexity) with rules and with LLMs | Implemented; evaluation exploratory (section 8.4) |
+| Migrate SAS tables to Parquet with reconciliation, including encoding and truncation checks | Implemented, tested, demonstrated |
+| Reproduce `PROC FORECAST` in Python | Implemented, tested, demonstrated for one configuration |
+| Convert SAS code to PySpark with several methods and validate each against SAS | Implemented, demonstrated |
+| Power BI data model and dashboard | Tables implemented (`outputs/bi/`); dashboard built manually, see [powerbi/](../powerbi/) |
+| Production deployment, orchestration, monitoring, CI | Future work (section 13) |
 
 ---
 
@@ -602,42 +591,40 @@ should read. A difference smaller than the 6th decimal place does not matter to 
 
 ---
 
-## 12. What I would do better with more time
+## 12. What could be done better
 
-In order of value:
+With more time, in order of value:
 
-1. **Let SAS check itself.** Have SAS compute summary numbers for each table (counts, sums, value frequencies)
-   and compare them with the same numbers computed by Spark, so the data check no longer depends on the library
-   that did the conversion.
-2. **Targeted test cases.** A duplicate whose two copies differ, so "keep the first" is really tested; a run
-   with a changed setting, where the output must change; missing values in every column used in a rule; values
-   right at the boundaries. Run each one through SAS and through the converted code.
-3. **Comparison rules per column.** Exact for keys, counts, dates and text; an agreed number of decimals for
-   money; a small tolerance for model outputs; and a check on column types.
-4. **Repeat the AI runs, and remove the help.** Run each method several times, and also without the rules and
-   without the file comments, to see how much of the result comes from the model and how much from my setup.
-5. **Score each program on its own**, with SAS's input tables, so an early failure doesn't hide how good the
-   later conversions are.
-6. **A fair classification test**, on programs not written for this project, labelled by someone else.
-7. **Combine the methods**: rule-based translation where it works, an AI model for the rest, and the same
-   checks for everything.
+1. **Independent reconciliation profiles computed inside SAS** (`PROC MEANS`, `PROC FREQ`, counts) compared
+   with the same profiles computed by Spark, so the check does not rely on the reader that did the migration.
+2. **Targeted behavioural test cases**: a duplicate whose copies differ, a changed threshold in the control
+   table (the output must change), missing values in every numeric column used in a rule, boundary values.
+   Run each through SAS and through the converted code.
+3. **Explicit comparison rules per column**: exact for keys, counts, dates and text; agreed precision for
+   amounts; absolute plus relative tolerance for model outputs; plus type checks.
+4. **Repeated LLM runs** and **ablations** (without the rules, without the header comments) to measure how much
+   of the conversion result comes from the model versus the harness.
+5. **Per-program scoring with SAS's upstream tables as inputs**, so a single upstream failure does not hide
+   the quality of downstream conversions.
+6. **An independent classification answer key** on programs not written for this project.
+7. **Routing**: rules first where they apply (free, deterministic), LLM for the rest, validation for all.
 
 ---
 
-## 13. What a production migration would need
+## 13. Production considerations
 
-None of this is built here; it is what I would expect to add in a real project.
+What a real migration would add beyond this proof of concept (none of this is implemented here):
 
 | Area | What would be needed |
 |---|---|
-| Confidence in the results | Run SAS and Databricks side by side on production data for several cycles, sign off each program, and make sure a failed check cannot be quietly ignored. |
-| Data definitions | Explicit schemas (types, precision, which columns may be empty) together with business descriptions and the original SAS metadata, kept in a data catalog rather than in side files. |
-| Scheduling | Databricks Jobs instead of local scripts, with the run order taken from the lineage graph. |
-| Code management | Converted code reviewed by people, kept in version control, and deployed through CI, with the comparison against SAS as a required step. |
-| Monitoring | Row counts, check results and data quality recorded for every run, with alerts. |
-| Security | Secrets in a vault, access managed through Unity Catalog permissions, and no personal data in test data. |
-| Scale | These local runs say nothing about performance; partitioning and cluster sizes need real data volumes. |
-| Code analysis | A proper SAS parser, or SAS's own logs (`PROC SCAPROC` records which tables a job actually used), for a complete inventory and column-level lineage. Programs that generate code at run time should be flagged as high risk. |
+| Assurance | parallel runs of SAS and Databricks on production data over several cycles; sign-off per program; exceptions that cannot be ignored silently |
+| Data contracts | explicit schemas (types, precision, nullability) plus business metadata (labels, units) and SAS-compatibility metadata, stored in a catalog, not side files |
+| Orchestration | Databricks Jobs or pipelines instead of local scripts; dependencies from the lineage graph |
+| Code management | converted code reviewed by humans, versioned, deployed through CI with the validator as a gate |
+| Observability | row counts, reconciliation results and data-quality checks recorded per run, with alerting |
+| Security | secrets in a vault, access through Unity Catalog permissions, no personal data in test fixtures |
+| Scale | the local Spark runs say nothing about performance; partitioning and cluster sizing need real volumes |
+| Analysis | a real SAS parser or SAS's own logs (`PROC SCAPROC`) for inventory and column-level lineage; `CALL EXECUTE` and generated code treated as high risk |
 
 ---
 
@@ -656,104 +643,100 @@ fresh clone produced every result file byte for byte, apart from the columns tha
 
 ---
 
-## 15. What I learned
+## 15. Key takeaways
 
-The translation turned out to be the easier half. What made the results trustworthy was comparing every output
-with SAS's own tables, and that comparison needed as much design as the conversion.
-
-The dangerous differences between SAS and Spark are the quiet ones: missing values, which duplicate is kept,
-row order, and text length in bytes. None of them causes an error, and most of them pass row counts and totals.
-They only show up in value-by-value checks, and only if the data contains the case.
-
-A check that has never failed is not worth much. The deliberate encoding failure, the cut-off names and the
-intentionally wrong results fed to the validator are what give "no difference found" its meaning.
-
-The instructions given to an AI model matter as much as the model. The same Lakebridge model went from 0 to 5
-programs with better instructions, and Claude's 11 depended on the rules I wrote. The rule-based translator
-still earned its place: it converts less, but it refuses rather than guesses.
+- **Translating code is the easy part; the validation harness is the product.** Every result in this project
+  is only as credible as the comparison with SAS's own output.
+- **Silent semantic differences dominate the risk.** Missing values, deduplication, row order and byte lengths
+  do not crash; they need targeted data and value-level checks, not row counts.
+- **Checks must be shown to fail.** The negative test, the truncation evidence and the validator's mutation
+  tests are what make "no difference found" meaningful.
+- **LLM conversion quality depends heavily on context.** The same Lakebridge model went from 0 to 5 of 11 with a
+  better prompt; Claude's 11 of 11 relied on explicit SAS rules. Deterministic rules remain valuable where they
+  apply, because they refuse instead of guessing.
+- **State what a result does not show.** The untested paths listed in section 11 matter as much as the passing
+  checks.
 
 ---
 
-## Appendix A: the case requirements and where they are covered
+## Appendix A: case requirements and where they are met
 
-The written case asked for a pipeline that analyzes and converts scripts from one language (A) to another (B).
-Here A is SAS and B is PySpark. The interviewers added further requirements, listed in the second table.
+The case ("Automating code analysis and migration from syntax A to syntax B") with A = SAS and B = PySpark,
+plus the requirements added in the interview.
 
 **Written case**
 
 | Requirement | Status | Where |
 |---|---|---|
-| Run locally, with a local AI model or open-source tools | The analyzer, rules, data migration, checks and the qwen2.5-coder 14B model all run locally. Claude (through an API) and Lakebridge (on Databricks) were added as comparisons. | [`python/`](../python/), [`python/config.yaml`](../python/config.yaml) |
-| 1. Read and parse the scripts from a folder | Built and tested | [`analyzer.py`](../python/analyzer.py) reads `sas/programs/` |
-| 2. Use an AI model to extract the business category, technical category, complexity and a description | Built, with the local and the remote model, using a fixed JSON format | [`analyze_llm.py`](../python/analyze_llm.py), [`prompts/analysis_prompt_v1.md`](../prompts/analysis_prompt_v1.md), results in [`outputs/`](../outputs/) (`llm_analysis_*.csv`) |
-| 3. Do the same with fixed rules, and compare with the AI model | Built: accuracy, agreement between methods and Cohen's kappa (agreement corrected for chance). The comparison is only indicative (section 8.4). | [`rules/classification_rules_v1.yaml`](../rules/classification_rules_v1.yaml), [`compare.py`](../python/compare.py), [`outputs/comparison_summary.csv`](../outputs/comparison_summary.csv), [`outputs/method_agreement.csv`](../outputs/method_agreement.csv) |
-| 4. Convert each script, run both versions on test data, and report the differences | Built and shown | sections 6.5, 7.2 and 8.3; [`outputs/conversion/`](../outputs/conversion/) |
-| Deliverables: documented pipeline, output files, a short report on the challenges | This repository; the challenges are in section 10 | – |
+| A local pipeline (local LLM or open-source models) | Implemented: analyzer, rules, data migration, validation and the qwen2.5-coder 14B LLM all run locally; Claude (remote API) and Lakebridge (Databricks) were added as comparisons | [`python/`](../python/), [`python/config.yaml`](../python/config.yaml) |
+| 1. Read and parse the scripts from a directory | Implemented, tested | [`analyzer.py`](../python/analyzer.py) reads `sas/programs/` |
+| 2. LLM extraction: business category, technical category, complexity, description | Implemented (local and remote LLM, JSON schema) | [`analyze_llm.py`](../python/analyze_llm.py), [`prompts/analysis_prompt_v1.md`](../prompts/analysis_prompt_v1.md), results in [`outputs/llm_analysis_*.csv`](../outputs/) |
+| 3. Deterministic (rule-based) extraction and comparison with the LLM | Implemented; accuracy, agreement and Cohen's kappa computed; evaluation exploratory (section 8.4) | [`rules/classification_rules_v1.yaml`](../rules/classification_rules_v1.yaml), [`compare.py`](../python/compare.py), [`outputs/comparison_summary.csv`](../outputs/comparison_summary.csv), [`outputs/method_agreement.csv`](../outputs/method_agreement.csv) |
+| 4. Convert each script; run original and converted on test data; report differences | Implemented, demonstrated | sections 6.5, 7.2, 8.3; [`outputs/conversion/`](../outputs/conversion/) |
+| Deliverables: documented pipeline, output files, report on challenges | This repository; challenges in section 10 | – |
 
 **Interview requirements**
 
 | Requirement | Status | Where |
 |---|---|---|
-| Assess each script before converting it: tables it creates, inputs, outputs | Built and tested | [`outputs/migration_inventory.csv`](../outputs/migration_inventory.csv), [`outputs/program_dependencies.csv`](../outputs/program_dependencies.csv) |
-| Detect the source databases (`LIBNAME`) | **Partly.** Libraries that point to folders are recorded and mapped to the new platform ([`library_mappings.yaml`](../python/library_mappings.yaml)); SQL sent directly to a database is flagged. Libraries that connect to a database are not detected. | section 6.1 |
-| Convert with AI calls, using purpose-written prompts and SAS-to-PySpark rules; no agent | Built: one call per program plus one repair | [`prompts/`](../prompts/), [`rules/conversion_rules.md`](../rules/conversion_rules.md) |
-| A CSV with a business description, technical description and category for each script | Built | [`outputs/llm_analysis_claude_opus_5.csv`](../outputs/llm_analysis_claude_opus_5.csv), [`outputs/llm_analysis_qwen2.5_coder_14b.csv`](../outputs/llm_analysis_qwen2.5_coder_14b.csv) |
-| SAS code beyond simple ETL: macros, nested macros, macro variables read from a table, with before and after | Built and shown | programs 04, 06, 07, 08 and 11; section 9.2 |
-| `.sas7bdat` to Parquet with a reconciliation test, covering cut-off text and French accents, aiming for zero data loss | Built and tested: no loss **found** in 192 checks, and cut-off text and a wrong encoding are shown to be caught | sections 6.3 and 7.1 |
-| Code lineage and data lineage together, including links between programs through macros and `%include`, shown in Power BI | Built at table level: 53 items and 97 connections from the source files to the result tables, including `%include`, macro definitions and nested macro calls; any table can be traced back automatically; one number was traced column by column by hand. Automatic column-level lineage is not built. | [`docs/lineage.md`](lineage.md), [`lineage_trace.py`](../python/lineage_trace.py), [`outputs/lineage_paths.csv`](../outputs/lineage_paths.csv), [powerbi/](../powerbi/) |
-| Rebuild `PROC FORECAST` from SAS's documentation so that Python matches SAS | Built and shown (to within 0.00000000035) | [`forecast.py`](../python/forecast.py), section 8.2 |
-| Power BI built on a designed data model | The model's tables are built; the dashboard is built in Power BI Desktop (the `.pbix` file is not in this repository) | [powerbi/](../powerbi/) |
-| One zip with a presentation, the `.pbix`, the outputs, the code and the prompts | The outputs, code and prompts are in this repository; the presentation and `.pbix` are delivered separately | – |
+| Assess code before converting: per-script tables created, inputs, outputs | Implemented, tested | [`outputs/migration_inventory.csv`](../outputs/migration_inventory.csv), [`outputs/program_dependencies.csv`](../outputs/program_dependencies.csv) |
+| Detect source databases (`LIBNAME`) | **Partial**: path `LIBNAME`s are recorded and mapped to the target ([`library_mappings.yaml`](../python/library_mappings.yaml)); SQL pass-through is flagged; database engines in `LIBNAME` are not detected | section 6.1 |
+| Conversion through LLM calls with purpose-written prompts and injected source→target rules; no agent | Implemented: one call per program plus one repair | [`prompts/`](../prompts/), [`rules/conversion_rules.md`](../rules/conversion_rules.md) |
+| Business description, technical description and categorization per script in one CSV | Implemented | [`outputs/llm_analysis_claude_opus_5.csv`](../outputs/llm_analysis_claude_opus_5.csv), [`outputs/llm_analysis_qwen2.5_coder_14b.csv`](../outputs/llm_analysis_qwen2.5_coder_14b.csv) |
+| Code beyond simple ETL: macros, nested macros, macro variables from a database, with before/after | Implemented, demonstrated | programs 04, 06, 07, 08, 11; section 9.2 |
+| `.sas7bdat` → Parquet with reconciliation, truncation and French accents, "zero data loss" | Implemented, tested: no loss **detected** across 192 checks; truncation and wrong encoding shown to be caught | sections 6.3, 7.1 |
+| Code lineage + data lineage, including program-to-program links through macros and `%include`, visualized in Power BI | Implemented at table level: 53 nodes, 97 edges, from source files to report tables, with `INCLUDES`, `DEFINES` and nested `CALLS` edges; automated back-tracing of any table; one value traced to column level by hand. Automated column-level lineage not implemented | [`docs/lineage.md`](lineage.md), [`lineage_trace.py`](../python/lineage_trace.py), [`outputs/lineage_paths.csv`](../outputs/lineage_paths.csv), [powerbi/](../powerbi/) |
+| `PROC FORECAST` replicated from SAS's method so Python matches SAS | Implemented, demonstrated (3.5e-10) | [`forecast.py`](../python/forecast.py), section 8.2 |
+| Power BI on a designed data model | Model tables implemented; dashboard built in Power BI Desktop (the `.pbix` is not in this repository) | [powerbi/](../powerbi/) |
+| One zip with presentation, `.pbix`, outputs, code and prompts | Outputs, code and prompts are in this repository; the presentation and `.pbix` are delivered separately | – |
 
 ---
 
 ## Appendix B: design decisions
 
-**Why generated data.** I considered SAS's built-in sample tables (SASHELP), public mortgage data, the New York
-taxi data and the Czech "Berka" banking dataset. None of them contains all the traps I needed (missing values
-where a rule uses them, a loan without a customer, an exact duplicate, long accented names, settings stored as
-text), and several cover only one business area, which would make the business classification meaningless.
-Generating the data gave me several business areas (customers, loans, payments, cards, reporting), a monthly
-series for the forecast, settings tables that drive the macros, French names, a known right answer for every
-trap, and no licensing questions. The cost is realism (section 11).
+**Dataset: fully synthetic, seeded.** The SASHELP tables, public mortgage data, NYC Taxi and the Berka
+financial dataset were considered. None of them contains all the edge cases needed (missing values in a
+rule, an orphan key, an exact duplicate, 30-byte accented names, settings stored as text), and several do not
+span multiple business domains. A generator gives multiple domains (customers, lending, payments, cards,
+reporting), a monthly series for the forecast, control tables that drive the macros, French names, known
+answers for every edge case, and no licensing question. The cost is realism (section 11).
 
-**Why qwen2.5-coder 14B as the local model.** It is trained for code and runs on a 16 GB laptop through Ollama.
-I set it to be as repeatable as possible (temperature 0, fixed seed) with a 32,000-token context; my prompts
-stayed under 3,000 tokens. My original plan named the 7B version of the same model; I used the 14B version.
+**Local model: qwen2.5-coder 14B** (Ollama, temperature 0, fixed seed, 32k context). It is a code-specialised
+model that runs on a 16 GB laptop. The initial plan named the 7B variant; the 14B variant was used. Prompts stayed under
+3,000 tokens, well inside the context.
 
-**How the prompts are structured.** Classifying and converting use separate prompts. The classification prompt
-gives the analyzer's facts (marked as reliable), the code and the allowed labels, and a JSON format rules out
-any other answer. The conversion prompt states the goal (the same numbers as SAS, not nice-looking code), then
-gives the analyzer's facts, where the tables are, only the rules that apply to this program, the SAS code, and
-asks for the script only. The repair prompt adds the error or the differences, and the previous script.
+**Prompt structure.** Extraction and conversion use separate prompts. Extraction: analyzer facts ("treat as
+ground truth"), the code, the allowed labels, and a JSON schema that makes other answers impossible.
+Conversion: role and goal (equivalent numbers, not style), analyzer facts, library paths, **only the rules the
+program triggers**, the SAS code, and "return the script only". Repair: the error or the differing checks, plus
+the previous script.
 
-**Why `METHOD=EXPO TREND=2` for the forecast.** It is fully described by a few formulas in SAS's documentation,
-so matching SAS exactly is realistic. SAS's default method picks its own model settings automatically, which
-would be much harder to reproduce.
+**Forecast method: `METHOD=EXPO TREND=2`.** It is fully specified by a few documented formulas (Brown double
+exponential smoothing with OLS start values), so parity is achievable. The default stepwise autoregressive
+method selects lags automatically and would be much harder to reproduce exactly.
 
-**Why `pyreadstat` for the SAS files.** It reads `.sas7bdat` files without SAS, uses the encoding stored in the
-file, and returns SAS's metadata; I then write Parquet with an explicit schema. Section 12 explains how an
-independent check computed by SAS would make this stronger.
+**`.sas7bdat` reader: `pyreadstat`**, reading with the file's declared encoding, then PyArrow with an explicit
+schema. The checks cover structure, statistics, text in characters and bytes, and every row's fingerprint,
+plus the source files. An independent profile computed inside SAS would strengthen this (section 12).
 
-**Lineage in Power BI.** All connections are in one table (`FactLineageEdge`), shown as a network graph that can
-be filtered by kind of connection. A second table (`FactLineagePath`) lists everything behind each result table,
-so a page can show the sources of any table you pick. The rest of the model is described in
+**Lineage in Power BI.** Programs, tables, macros and libraries are nodes in one edge table
+(`FactLineageEdge`), shown as a network graph with filters on relationship and confidence. The model is two
+stars (migration results; bank data, snowflaked through segment → customer → loan), described in
 [powerbi/](../powerbi/).
 
-**What changed from my first plan.**
-- The local model became the 14B version instead of 7B.
-- I allowed one repair instead of three, to keep the comparison between methods fixed.
-- I compared rows with fingerprints instead of matching them on a key, because that works for every table
-  without choosing a key, and duplicated rows still count.
-- I read the SAS files with `pyreadstat`.
-- I added Claude and Lakebridge as extra methods to compare against.
+**Changes from the initial plan.**
+- The local model moved from qwen2.5-coder 7B to 14B.
+- The repair loop allows one repair instead of three, which keeps the comparison between methods fixed.
+- Comparison uses row fingerprints (multisets of SHA-256 hashes) instead of key-based diffs, so no key has to be chosen per table and duplicated rows still count.
+- The .sas7bdat reader is pyreadstat.
+- Claude and Lakebridge were added as comparison methods.
 
-**Risks I expected, and what happened.**
+**Main risks, and how they played out.**
 
-| Risk | What I did | What happened |
+| Risk | Mitigation | Outcome |
 |---|---|---|
-| Connecting to SAS OnDemand from Python | Used SASPy with the encryption files SAS requires | Worked once the files were installed |
-| The local model being too slow or too weak | Kept the rule-based method as a baseline, added a remote model to compare | 5.4 hours for 4 of 11 programs |
-| My checks rejecting correct code | Tested the validator with wrong results, fixed bugs, reran | Three bugs found and fixed |
-| Not being able to match the forecast | Chose the SAS method that is fully documented | Matched to within 0.00000000035 |
-| Text encoding and cut-off text | Byte-length checks and a deliberately broken load | Cut-off text was caught |
+| SAS OnDemand connection from Python | SASPy with the required encryption jars | worked after installing SAS's jars |
+| Local model too slow or too weak | kept the rule-based method as a baseline; added a remote model for comparison | 5.4 hours for 4 of 11 |
+| Validator wrongly failing correct code | mutation tests, fixed harness bugs, reran | three harness bugs found and fixed |
+| Forecast parity not reachable | chose the documented `EXPO TREND=2` method | matched within 3.5e-10 |
+| Encoding and truncation | byte-length checks and a deliberately truncated load | truncation caught |

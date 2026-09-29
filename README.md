@@ -1,145 +1,119 @@
-# SAS to PySpark migration, checked against real SAS output
+# SAS → PySpark migration with automated equivalence checks
 
-Many banks still run their analytics in SAS and are moving to Spark platforms such as Databricks. Rewriting
-the code is only half of that work. The other half is showing that the new code gives the same numbers as
-the old code, because SAS and Spark differ in small ways that do not cause errors: they just produce
-slightly different results.
+A technical case study: migrate a bank's SAS programs and data to PySpark (the engine behind Databricks), and
+check automatically that the migrated code produces the same results as SAS.
 
-This project is a case study of that problem. I wrote 12 SAS programs for a fictional Québec retail bank,
-ran them in real SAS 9.4 (SAS OnDemand for Academics), and used the tables SAS produced as the "right
-answers". I then:
+The source system is a small, synthetic SAS estate (12 programs on a fictional Québec retail bank) that was
+run in real SAS 9.4. Its own output tables are the expected answers. The data contains deliberately planted
+edge cases where SAS and Spark behave differently, so that a wrong migration fails loudly instead of silently.
 
-- analyzed the SAS code automatically (what each program reads, writes and calls) and classified each program,
-- converted the SAS data files to Parquet (the file format Spark and Databricks use) and checked that nothing
-  changed,
-- converted the SAS code to PySpark in four different ways, ran the converted code, and compared its output
-  with SAS's output, value by value.
-
-To make the comparison meaningful, the generated data contains a few deliberate traps: values where a
-straightforward translation from SAS to Spark gives a wrong answer without any error (for example missing
-incomes, a duplicated payment, or names with accented letters that do not fit in a short text column).
-
-The full write-up, including design decisions, limitations and what a production version would need, is in
-[docs/TECHNICAL_REPORT.md](docs/TECHNICAL_REPORT.md).
+**Full write-up:** [docs/TECHNICAL_REPORT.md](docs/TECHNICAL_REPORT.md) · how each case requirement is met:
+[Appendix A](docs/TECHNICAL_REPORT.md#appendix-a-case-requirements-and-where-they-are-met) · why LLM conversion
+did not reach 100% and what to do next: [section 8.5](docs/TECHNICAL_REPORT.md#85-why-the-ai-methods-did-not-all-reach-11-and-what-to-change)
 
 ---
 
-## Results
+## Results at a glance
 
-### Moving the data: SAS tables to Parquet
+| Question | Result |
+|---|---|
+| Does the data survive the move from SAS tables (`.sas7bdat`) to Parquet? | No difference found across 192 checks (counts, nulls, sums, min/max, text lengths in characters and bytes, every text value, a SHA-256 fingerprint of every row). A deliberately wrong encoding and a deliberately truncated load are both detected. |
+| Can Python reproduce `PROC FORECAST`, which has no Spark equivalent? | Yes for the configuration used: 60 forecasts and 4 model states match SAS within 3.5e-10. Confidence limits are not reproduced. |
+| Which method converts the SAS code correctly? | See below. A program counts as converted only if its output tables match SAS's on every check. |
 
-SAS stores tables in its own file format (`.sas7bdat`), which Databricks cannot read directly. The 7 source
-tables were converted to Parquet, and each Parquet file was compared each Parquet file with the original SAS table using 192 checks:
-the number of rows and columns, the number of empty values, sums and minimum/maximum of every numeric column,
-the length of every text column (counted in characters and in bytes, because an accented letter takes two
-bytes), every single text value, and a fingerprint (a hash) of every row. **No differences were found.**
+| Method | What it was given | Result | What the result means |
+|---|---|---|---|
+| **Claude Opus 5** (remote API) | the analyzer's facts about the program, the library paths, the SAS rules the program triggers, the SAS code; one repair with the error or the differing values | **11 of 11** validated (9 first try, 2 after repair); 413 of 413 checks; $0.88 | Every output table of every program matched SAS on every check. Under this harness it converted the whole estate, but the SAS rules and the project's forecast function in the prompt did much of the work, and it ran once. |
+| **Rule-based translator** (no LLM) | nothing but its own templates | **4 of 11** (01, 02, 03, 05); 7 refused | It never produced a wrong program: what it converted was exact, and what it could not convert (macro language, `PROC REG`, `PROC FORECAST`) it refused with the reason. Reliable but narrow, since real SAS estates use macros everywhere. |
+| **qwen2.5-coder 14B** (local, Ollama) | exactly what Claude was given | **4 of 11** (01, 02, 05, and 04 after repair) | A laptop-sized local model handles the simple programs and fails the complex ones on basic coding errors (a Python keyword as an argument name, wrong paths). Free and private, but 5.4 hours. |
+| **Databricks Lakebridge Switch**, built-in SAS prompt | Switch's own SAS instructions, no project facts or rules; model `gpt-oss-120b` on Databricks serverless | **0 of 11** | As shipped, its instructions break on this setup: macro variables become notebook parameters that nothing supplies, and `.cache()` is refused by serverless compute. |
+| **Lakebridge Switch**, custom prompt | Switch's instructions with those problems fixed, plus the project's SAS rules; same model and compute | **5 of 11** (01, 02, 03, 05, 09) | The same model went from 0 to 5 purely because of better instructions. The rest failed on cross-file consistency (the macro library and its callers were converted separately) and small output details. |
 
-A check that never fails proves little, so the checks themselves were tested too: reading a file with the wrong
-text encoding, and loading names into a column that was too short, are both detected.
-
-### Reproducing `PROC FORECAST`
-
-`PROC FORECAST` is a SAS procedure with no equivalent in Spark or pandas. The forecasting method it uses was
-rebuilt (double exponential smoothing) in Python from the SAS documentation. The 60 forecast values and the
-4 final model values match SAS to within 0.00000000035. SAS's confidence limits were not reproduced.
-
-### Converting the code
-
-For each method, a program counts as successfully converted only if every table it writes is identical to
-the table SAS wrote (numbers rounded to 6 decimals), and if the planted traps are handled correctly.
-
-| Method | Converted (of 11) | What it was given, and what the result tells us |
-|---|---|---|
-| **Claude Opus 5** (Anthropic's API) | **11** | For each program, the prompt contained the facts the analyzer found (input and output tables, macros), where each table lives, a set of rules about SAS behaviour written for this project (for example how SAS compares missing values), and the SAS code. 9 programs were right the first time; 2 crashed, and Claude fixed both when shown the error message. Total cost: $0.88. The rules did a lot of the work, and each method ran only once. |
-| **Rule-based translator** (written for this project, no AI) | **4** | Fixed templates for the SAS features it knows. It converted 4 programs exactly and refused the other 7 (they use SAS macros, `PROC REG` or `PROC FORECAST`) rather than guess. It never produced a wrong program, but it cannot handle macros, which real SAS code uses everywhere. |
-| **qwen2.5-coder 14B** (a local model, run on a laptop with Ollama) | **4** | Exactly the same prompt and rules as Claude. It converted the simpler programs and failed on the complex ones with basic coding mistakes, such as using a Python keyword as a variable name. It is free and the code never leaves the machine, but it took 5.4 hours. |
-| **Databricks Lakebridge** (Databricks' own migration tool, using its "Switch" converter and the `gpt-oss-120b` model) with its built-in SAS instructions | **0** | Its default instructions tell the model to turn SAS macro variables into notebook parameters (which nothing fills in), and to cache tables with `.cache()`, which Databricks serverless compute does not allow. So the notebooks stopped before producing anything. |
-| **Lakebridge** with the project's instructions | **5** | Same model, same compute. The two problematic instructions were removed and the project's SAS rules added. It went from 0 to 5, which shows how much the instructions matter. The remaining failures came mostly from converting each file separately: a shared macro library and the programs that use it did not agree on names. |
-
-These results hold for these 11 programs, this data and these checks. They are not a promise of how any
-method would do on a real bank's code: [section 8](docs/TECHNICAL_REPORT.md#8-results) of the report explains
-why the AI methods did not all reach 11, and what to change.
-
-### Lineage: tracing a number back to its source
-
-The analyzer also builds a map of how the programs are connected: which program reads which table, which
-program writes it, which programs pull in other programs (`%include`), and which macros (reusable pieces of
-SAS code) are defined where and called from where. With that map, any result table can be traced back step by
-step to the programs, settings and source files behind it. [docs/lineage.md](docs/lineage.md) shows the map
-and a worked example.
+These are **benchmark results under defined test conditions** (these programs, this data, these checks, one run
+per method), not a production reliability estimate. The report explains what each result does and does not
+show.
 
 ---
 
-## How the pieces fit together
+## How it works
 
 ```mermaid
 flowchart LR
-    G["Generated bank data<br/>(with planted traps)"] --> S["SAS 9.4<br/>loads the data, runs 12 programs"]
-    S -->|"SAS tables"| M["Convert to Parquet<br/>+ 192 checks"]
-    S -->|"SAS code"| A["Analyzer<br/>what each program reads, writes, calls"]
-    A --> C["Convert the code<br/>(4 methods)"]
-    M --> R["Run the converted code<br/>on the Parquet data"]
+    G["Synthetic bank data<br/>8 planted edge cases"] --> S["Real SAS 9.4<br/>load + run 12 programs"]
+    S -->|".sas7bdat tables"| M["Data migration<br/>SAS → Parquet + 192 checks"]
+    S -->|"SAS code"| A["Static analyzer<br/>inventory + lineage"]
+    A --> C["Code conversion<br/>rules · local LLM · Claude · Lakebridge"]
+    M --> R["Run converted PySpark<br/>on the migrated data"]
     C --> R
-    S -->|"SAS results = right answers"| V["Compare with SAS,<br/>value by value"]
+    S -->|"SAS output tables = expected results"| V["Validator<br/>cell-by-cell comparison + edge-case checks"]
     R --> V
-    V --> B["Tables for the<br/>Power BI dashboard"]
+    V --> B["Result tables<br/>for Power BI"]
 ```
 
+1. **Data:** a seeded generator creates 500 customers, 800 loans, 21,412 payments and 5,000 card transactions,
+   with planted edge cases (missing incomes, an orphan loan, a duplicate payment, refunds, accented names up to
+   30 UTF-8 bytes, thresholds stored as text in settings tables).
+2. **SAS:** the data is loaded into SAS and 11 business programs run there (DATA steps, joins, `PROC FORMAT`,
+   `NODUPKEY` with `FIRST.`/`LAST.`/`RETAIN`, `PROC MEANS`/`FREQ`, macros with `%INCLUDE` and nesting, `PROC REG`,
+   `PROC FORECAST`). Their 19 output tables are the expected answers.
+3. **Analyze:** a deterministic analyzer lists what each program reads, writes, defines and calls, and builds
+   a lineage graph of data (files → tables → programs) and code (`%include`, macros, nested macro calls). Any
+   output table can be **traced back** to the programs, settings and source files behind it
+   ([docs/lineage.md](docs/lineage.md)).
+4. **Migrate data:** SAS tables are converted to Parquet and reconciled against the SAS tables and the source files.
+5. **Convert code:** each method writes PySpark; the code is run on the migrated data and its outputs are
+   compared with SAS's. LLM methods get one repair attempt with the error or the differing values.
+
 ---
 
-## Where to find things
+## Repository guide
 
-| Path | What it contains |
+| Path | Contents |
 |---|---|
-| [docs/TECHNICAL_REPORT.md](docs/TECHNICAL_REPORT.md) | the full write-up |
-| [docs/lineage.md](docs/lineage.md) | lineage diagrams and a worked back-tracing example |
-| [python/](python/) | the pipeline, one script per step; [`run_all.py`](python/run_all.py) runs them all in order |
-| [sas/programs/](sas/programs/) | the 12 SAS programs being migrated |
-| [sas/outputs/](sas/outputs/) | the tables SAS produced (the right answers) |
-| [rules/](rules/), [prompts/](prompts/) | the conversion rules and the exact prompts sent to the models |
-| [converted/](converted/) | the Python code each method produced, unedited, one folder per method |
-| [outputs/](outputs/) | every result as a CSV file |
-| [tests/](tests/) | 47 automated tests (pytest) |
+| [docs/TECHNICAL_REPORT.md](docs/TECHNICAL_REPORT.md) | the full write-up: problem, design, validation, results, limitations, production considerations |
+| [python/](python/) | the pipeline, one script per step; [`run_all.py`](python/run_all.py) runs them in order |
+| [sas/programs/](sas/programs/) | the 12 SAS programs (the legacy code) |
+| [sas/data/](sas/data/), [sas/outputs/](sas/outputs/), [sas/logs/](sas/logs/) | SAS tables, SAS results (the expected answers), SAS logs |
+| [rules/](rules/), [prompts/](prompts/) | conversion and classification rules, LLM prompts |
+| [converted/](converted/) | the PySpark each method generated, kept exactly as produced |
+| [outputs/](outputs/) | every result as CSV: inventory, lineage, reconciliation, forecast parity, conversion attempts and checks |
+| [tests/](tests/) | 47 tests: data generator, analyzer, rules, data migration, forecast, validator |
+| [docs/lineage.md](docs/lineage.md) | data lineage, code lineage and back-tracing, as diagrams |
 | [powerbi/](powerbi/) | the dashboard's data model and measures |
 
-If you only read three code files: [`migrate_data.py`](python/migrate_data.py) (SAS tables to Parquet and the
-192 checks), [`validate.py`](python/validate.py) (how converted output is compared with SAS), and
-[`convert.py`](python/convert.py) (how a program is sent to a model, run, checked and repaired).
+Key code: [`migrate_data.py`](python/migrate_data.py) (data migration and reconciliation),
+[`validate.py`](python/validate.py) (the validator), [`convert.py`](python/convert.py) (LLM conversion loop),
+[`analyzer.py`](python/analyzer.py) (static analysis), [`forecast.py`](python/forecast.py) (`PROC FORECAST` in Python).
 
 ---
 
-## Running it
+## Run it
 
-SAS's results and the models' outputs are saved in the repository, so everything else can be rerun on your
-own machine in about 30 seconds, without a SAS licence or an API key. You need Python 3.12 and Java 17 (Spark
-requires Java).
+**Quick (about 30 seconds, no SAS account or API key needed).** SAS results and LLM outputs are committed, so
+everything else can be rerun locally:
 
 ```bash
 python3.12 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.lock.txt   # exact versions: the generated data depends on the NumPy version
-export JAVA_HOME=$(/usr/libexec/java_home -v 17)   # on macOS; point JAVA_HOME to Java 17 on other systems
+pip install -r requirements.lock.txt                      # exact versions (the random data depends on NumPy)
+export JAVA_HOME=$(/usr/libexec/java_home -v 17)           # Spark needs Java 17 (macOS command; set it your way elsewhere)
 export SPARK_LOCAL_IP=127.0.0.1
-python python/run_all.py   # generates the data, analyzes, migrates, converts with the rule-based method, runs the tests
+python python/run_all.py                                  # regenerate, analyze, migrate, convert (rules), summarize, test
 ```
 
-Rerunning SAS and the AI models as well (`python python/run_all.py --with-sas --with-llm`) needs a SAS OnDemand
-for Academics account, Ollama with the `qwen2.5-coder:14b` model, and an Anthropic API key in a `.env` file
-(see [.env.example](.env.example)). The [report](docs/TECHNICAL_REPORT.md#14-reproducing-the-results) lists the
-setup steps.
+**Full rerun** (optional): `python python/run_all.py --with-sas --with-llm` also reruns SAS (needs a SAS
+OnDemand for Academics account and SASPy) and the LLM steps (needs Ollama with `qwen2.5-coder:14b`, and an
+`ANTHROPIC_API_KEY` in a git-ignored `.env`, see [.env.example](.env.example)). Setup details are in the
+report's [reproduction section](docs/TECHNICAL_REPORT.md#14-reproducing-the-results).
 
 ---
 
-## Limitations
+## Scope and honesty notes
 
-- The SAS code and data are small (12 programs, about 32,000 rows) and were written by me to contain known
-  problems. Real SAS code is larger and has problems nobody planned for.
-- Each conversion method ran once, so I don't know how much the AI results would vary between runs.
-- Some planted traps are weaker than they look (for example, the duplicated payment is an exact copy, so it
-  cannot show *which* copy was kept). The report lists these in
-  [section 11](docs/TECHNICAL_REPORT.md#11-limitations-and-assumptions).
-- The Power BI dashboard is built from the tables in `outputs/bi/`; its screenshot will be added to
-  [powerbi/](powerbi/).
+- The SAS estate is synthetic and small (12 programs), written to contain known migration risks.
+- LLM results come from one run per method; their run-to-run stability was not measured.
+- The Power BI dashboard is built from `outputs/bi/`; its screenshot is added in [powerbi/](powerbi/).
+- Limitations and what production would require: [report, sections 11–13](docs/TECHNICAL_REPORT.md#11-limitations-and-assumptions).
 
 ## License
 
-MIT. All data is generated; there is no real customer data in this repository.
+MIT, see [LICENSE](LICENSE). The data is synthetic.
